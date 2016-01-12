@@ -1,0 +1,16 @@
+Useful utilities for exploring and manipulating csv files.  For example,
+verify the integrity of data is maintained after modifying a sql query.
+
+Examples:
+* Check query before and after changes with csvdrop:
+    $ psql dbname -c "COPY (`cat before.sql`) TO STDOUT WITH CSV HEADER" > before.csv
+    $ psql dbname -c "COPY (`cat after.sql`) TO STDOUT WITH CSV HEADER" > after.csv
+    $ diff <(sort before.csv) <(csvdrop after.csv NewColumn1 | sort)
+
+* See the total values of columns
+    $ csvsum file.csv Subtotal Tax Margin
+    Subtotal: 1000000
+    Tax: 40000
+    Margin: 6000000
+
+

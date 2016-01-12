@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+#
+# Author:       Harrison Hubbell <harrison.hubbell@logicsupply.com>
+# Created:      11/09/2015
+# Description:  Sum the specified columns from an input csv and
+#               return the result to STDOUT.
+#
+
+from __future__ import print_function
+import argparse
+import csv
+import sys
+
+def read(src, header=True, delimiter=','):
+    """
+    Open a specified CSV file and read it.
+    :param src:         File path
+    :option header:     CSV file has a header row
+    :option delimiter:  CSV item delimiter
+    """
+    reader = csv.reader(src, delimiter=delimiter)
+    head = next(reader) if header is True else None
+
+    return head, list(reader)
+
+def find(haystack, needles):
+    """
+    Return the indexed of the needles in the haystack
+    :param haystack:    List to search
+    :param needles:     Items to find
+    """
+    if needles:
+        indexes = [haystack.index(x) for x in needles]
+    else:
+        indexes = range(len(haystack))
+
+    return indexes
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('infile',
+        type=argparse.FileType('r'),
+        default=sys.stdin)
+    parser.add_argument('cols',
+        nargs=argparse.REMAINDER)
+
+    args = parser.parse_args()
+
+    infile = args.infile
+    cols = args.cols
+
+    header, rows = read(infile)
+    sumcols = find(header, cols)
+
+    for index in sumcols:
+        print('{}: {}'.format(
+            header[index],
+            sum(float(x[index]) for x in rows)))
