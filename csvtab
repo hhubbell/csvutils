@@ -3,7 +3,8 @@
 # Author:       Harrison Hubbell <harrison.hubbell@logicsupply.com>
 # Created:      11/09/2015
 # Description:  Sum the specified columns from an input csv and
-#               return the result to STDOUT.
+#               return the result to STDOUT. Use python3 for better
+#               unicode support
 #
 
 from __future__ import print_function
@@ -11,17 +12,27 @@ import argparse
 import csv
 import sys
 
-def read(src, header=True, delimiter=','):
+def align(value):
     """
-    Open a specified CSV file and read it.
-    :param src:         File path
-    :option header:     CSV file has a header row
-    :option delimiter:  CSV item delimiter
     """
-    reader = csv.reader(src, delimiter=delimiter)
-    head = next(reader) if header is True else None
+    if type(value) is str:
+        try:
+            float(value)
+            alg = '>'
+        except ValueError:
+            alg = '<'
+    elif type(value) is int or type(value) is float:
+        alg = '>'
+    else:
+        alg = '<'
 
-    return head, list(reader)
+    return alg
+
+def fmt(string, width):
+    """
+    """
+    COLFMT = '{:{}{}}'
+    return COLFMT.format(string, align(string), width)
 
 def fmtcolmax(header, rows, maxw=None):
     """
@@ -38,18 +49,24 @@ def fmtcolmax(header, rows, maxw=None):
             lambda x: fmt(trunc(x, cmax), cmax) if len(x) > cmax else fmt(x, cmax),
             vals))
 
-    return zip(*fmtcol)
+    return list(zip(*fmtcol))
+
+def read(src, header=True, delimiter=','):
+    """
+    Open a specified CSV file and read it.
+    :param src:         File path
+    :option header:     CSV file has a header row
+    :option delimiter:  CSV item delimiter
+    """
+    reader = csv.reader(src, delimiter=delimiter)
+    head = next(reader) if header is True else None
+
+    return head, list(reader)
 
 def trunc(string, width, replace='...'):
     """
     """
     return string[:width - 3] + replace
-
-def fmt(string, width, align='<'):
-    """
-    """
-    COLFMT = '{:{}{}}'
-    return COLFMT.format(string, align, width)
 
 def write(header, rows):
     """
