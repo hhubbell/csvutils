@@ -61,13 +61,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     infile = args.infile
-    cols = args.cols
+    cols = sorted(args.cols) if args.alphabetize else args.cols
 
     header, rows = read(infile)
     sumcols = find(header, cols)
-
-    if args.alphabetize:
-        sumcols = sorted(sumcols)
 
     for index in sumcols:
         print('{}: {}'.format(
