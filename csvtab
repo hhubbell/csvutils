@@ -12,27 +12,27 @@ import argparse
 import csv
 import sys
 
-def align(value):
+def align(values):
     """
     """
-    if type(value) is str:
+    if all(type(x) is str for x in values):
         try:
-            float(value)
+            [float(x) for x in values if x]
             alg = '>'
         except ValueError:
             alg = '<'
-    elif type(value) is int or type(value) is float:
+    elif all(type(x) is int or type(x) is float for x in values):
         alg = '>'
     else:
         alg = '<'
 
     return alg
 
-def fmt(string, width):
+def fmt(string, width, alignment='<'):
     """
     """
     COLFMT = '{:{}{}}'
-    return COLFMT.format(string, align(string), width)
+    return COLFMT.format(string, alignment, width)
 
 def fmtcolmax(header, rows, maxw=None):
     """
@@ -43,10 +43,11 @@ def fmtcolmax(header, rows, maxw=None):
     fmtcol = []
 
     for head, vals in zip(header, flat):
+        calign = align(vals[1:])
         cmax = max(len(x) for x in vals)
         cmax = maxw if maxw is not None and maxw < cmax else cmax
         fmtcol.append(map(
-            lambda x: fmt(trunc(x, cmax), cmax) if len(x) > cmax else fmt(x, cmax),
+            lambda x: fmt(trunc(x, cmax), cmax, calign) if len(x) > cmax else fmt(x, cmax, calign),
             vals))
 
     return list(zip(*fmtcol))
