@@ -36,6 +36,18 @@ def find(haystack, needles):
 
     return indexes
 
+def tofloat(value):
+    """
+    Convert a value to a float.  Return 0 for any missing values
+    :param value:       Value to convert
+    """
+    try:
+        number = float(value)
+    except ValueError:
+        number = 0.0
+
+    return number
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('infile',
@@ -55,4 +67,4 @@ if __name__ == '__main__':
     for index in sumcols:
         print('{}: {}'.format(
             header[index],
-            sum(float(x[index]) for x in rows)))
+            sum(tofloat(x[index]) for x in rows)))
