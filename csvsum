@@ -55,6 +55,8 @@ if __name__ == '__main__':
         default=sys.stdin)
     parser.add_argument('cols',
         nargs=argparse.REMAINDER)
+    parser.add_argument('-a', '--alphabetize',
+        action='store_true')
 
     args = parser.parse_args()
 
@@ -63,6 +65,9 @@ if __name__ == '__main__':
 
     header, rows = read(infile)
     sumcols = find(header, cols)
+
+    if args.alphabetize:
+        sumcols = sorted(sumcols)
 
     for index in sumcols:
         print('{}: {}'.format(
