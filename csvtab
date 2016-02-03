@@ -34,7 +34,7 @@ def fmt(string, width, alignment='<'):
     COLFMT = '{:{}{}}'
     return COLFMT.format(string, alignment, width)
 
-def fmtcolmax(header, rows, maxw=None):
+def fmtcolmax(header, rows, maxw=None, pad=0):
     """
     """
     full = list(rows)
@@ -44,7 +44,7 @@ def fmtcolmax(header, rows, maxw=None):
 
     for head, vals in zip(header, flat):
         calign = align(vals[1:])
-        cmax = max(len(x) for x in vals)
+        cmax = max(len(x) for x in vals) + pad
         cmax = maxw if maxw is not None and maxw < cmax else cmax
         fmtcol.append(map(
             lambda x: fmt(trunc(x, cmax), cmax, calign) if len(x) > cmax else fmt(x, cmax, calign),
@@ -86,14 +86,17 @@ if __name__ == '__main__':
         default=sys.stdin)
     parser.add_argument('-m', '--maxlength',
         type=int)
+    parser.add_argument('-p', '--padding',
+        type=int)
 
     args = parser.parse_args()
 
     infile = args.infile
     maxlength = args.maxlength
+    padding = args.padding or 0
 
     header, rows = read(infile)
-    fmtrows = fmtcolmax(header, rows, maxlength)    
+    fmtrows = fmtcolmax(header, rows, maxlength, padding)    
     fmtheader = fmtrows.pop(0)
 
     write(fmtheader, fmtrows)
