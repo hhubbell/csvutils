@@ -16,6 +16,7 @@ def read(src, header=True, delimiter=','):
     :param src:         File path
     :option header:     CSV file has a header row
     :option delimiter:  CSV item delimiter
+    :return tuple:      header, rows tuple
     """
     reader = csv.reader(src, delimiter=delimiter)
     head = next(reader) if header is True else None
@@ -26,17 +27,26 @@ def find(haystack, needles):
     """
     Return the indexed of the needles in the haystack
     :param haystack:    List to search
-    :param needles:     Items to find
+    :param needles:     List of items to find
+    :return list:       List of indexes matching needles in haystack
     """
     return [haystack.index(x) for x in needles]
 
 def imask(vals, indexes):
     """
+    Mask a list based on a list of indexes
+    :param vals:        List to mask
+    :param indexes:     List of indexes to apply
+    :return list:       Masked list
     """
     return [x for i, x in enumerate(vals) if i not in indexes]
 
 def write(fileobj, header, rows):
     """
+    Dump data to file object
+    :param fileobj:     File object to write to
+    :param header:      csv header
+    :param rows:        csv rows
     """
     try:
         writer = csv.writer(fileobj, lineterminator='\n')

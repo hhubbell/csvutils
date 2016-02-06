@@ -14,28 +14,37 @@ import sys
 
 def align(values):
     """
+    Determine alignment based on column datatype.
+    :param values:      Column values
+    :return string:     str.format microlanguage alignment character
     """
-    if all(type(x) is str for x in values):
-        try:
-            [float(x) for x in values if x]
-            alg = '>'
-        except ValueError:
-            alg = '<'
-    elif all(type(x) is int or type(x) is float for x in values):
+    try:
+        [float(x) for x in values]
         alg = '>'
-    else:
+    except ValueError:
         alg = '<'
 
     return alg
 
 def fmt(string, width, alignment='<'):
     """
+    Return a formatted string for the cell
+    :param string:      String to format
+    :param width:       Cell width
+    :param alignment:   Cell alignment str.format microlanguage alignment char
+    :return string:     Formatted string
     """
     COLFMT = '{:{}{}}'
     return COLFMT.format(string, alignment, width)
 
-def fmtcolmax(header, rows, maxw=None, pad=0):
+def tabulate(header, rows, maxw=None, pad=0):
     """
+    Format the table
+    :param header:      Table header
+    :param rows:        Table rows
+    :option maxw:       Max cell width
+    :option pad:        Cell padding
+    :return list:       Formatted table in matrix like form.
     """
     full = list(rows)
     full.insert(0, header)
@@ -58,6 +67,7 @@ def read(src, header=True, delimiter=','):
     :param src:         File path
     :option header:     CSV file has a header row
     :option delimiter:  CSV item delimiter
+    :return tuple:      header, rows tuple
     """
     reader = csv.reader(src, delimiter=delimiter)
     head = next(reader) if header is True else None
@@ -66,11 +76,20 @@ def read(src, header=True, delimiter=','):
 
 def trunc(string, width, replace='...'):
     """
+    Truncate a string if it exceeds the specified width, replacing
+    the truncated data with an ellipsis or other.
+    :param string:      String to truncate
+    :param width:       Max string length
+    :option replace:    Replace truncated data with
+    :return string:     New truncated string
     """
-    return string[:width - 3] + replace
+    return string[:width - len(replace)] + replace
 
 def write(header, rows):
     """
+    Dump data to stdout
+    :param header:      Table header
+    :param rows:        Table rows
     """
     try:
         print(*header)
@@ -96,7 +115,7 @@ if __name__ == '__main__':
     padding = args.padding or 0
 
     header, rows = read(infile)
-    fmtrows = fmtcolmax(header, rows, maxlength, padding)    
+    fmtrows = tabulate(header, rows, maxlength, padding)
     fmtheader = fmtrows.pop(0)
 
     write(fmtheader, fmtrows)

@@ -17,6 +17,7 @@ def read(src, header=True, delimiter=','):
     :param src:         File path
     :option header:     CSV file has a header row
     :option delimiter:  CSV item delimiter
+    :return tuple:      header, rows tuple
     """
     reader = csv.reader(src, delimiter=delimiter)
     head = next(reader) if header is True else None
@@ -28,6 +29,7 @@ def find(haystack, needles):
     Return the indexed of the needles in the haystack
     :param haystack:    List to search
     :param needles:     Items to find
+    :return list:       List of indexes matching needles in haystack
     """
     if needles:
         indexes = [haystack.index(x) for x in needles]
@@ -38,8 +40,9 @@ def find(haystack, needles):
 
 def tofloat(value):
     """
-    Convert a value to a float.  Return 0 for any missing values
+    Convert a value to a float.  Return 0 for any failures.
     :param value:       Value to convert
+    :return float:      Converted value
     """
     try:
         number = float(value)
