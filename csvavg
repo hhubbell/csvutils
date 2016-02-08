@@ -11,6 +11,8 @@ import argparse
 import csv
 import sys
 
+OUT = '{:<{}} {:>{}}'
+
 def read(src, header=True, delimiter=','):
     """
     Open a specified CSV file and read it.
@@ -70,16 +72,37 @@ if __name__ == '__main__':
         nargs=argparse.REMAINDER)
     parser.add_argument('-a', '--alphabetize',
         action='store_true')
+    parser.add_argument('-t', '--tabulate',
+        action='store_true')
+    parser.add_argument('-p', '--precision',
+        type=int)
 
     args = parser.parse_args()
 
     infile = args.infile
-    cols = sorted(args.cols) if args.alphabetize else args.cols
+    cols = args.cols
 
     header, rows = read(infile)
-    sumcols = find(header, cols)
+    tosum = find(header, cols)
+    sums = []
 
-    for index in sumcols:
-        print('{}: {}'.format(
-            header[index],
-            avg(tofloat(x[index]) for x in rows)))
+    for index in tosum:
+        sums.append(avg(tofloat(x[index]) for x in rows))
+
+    if args.precision:
+        sums = ['{:.{}f}'.format(x, args.precision) for x in sums]
+
+    if args.tabulate is True:
+        hwidth = max(len(header[i]) for i in tosum) + 1
+        rwidth = max(len(str(x)) for x in sums)
+    else:
+        hwidth = ''
+        rwidth = ''
+
+    if args.alphabetize is True:
+        zipped = sorted(zip(tosum, sums), key=lambda x: header[x[0]])
+    else:
+        zipped = zip(tosum, sums)
+
+    for index, value in zipped:
+        print(OUT.format(header[index] + ':', hwidth, value, rwidth))
