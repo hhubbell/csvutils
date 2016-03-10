@@ -116,7 +116,7 @@ if __name__ == '__main__':
     padding = args.padding or 0
     delim = args.delim.decode('string-escape') if args.delim else ','
 
-    header, rows = read(infile)
+    header, rows = read(infile, delimiter=delim)
     fmtrows = tabulate(header, rows, maxlength, padding)
     fmtheader = fmtrows.pop(0)
 

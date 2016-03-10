@@ -76,7 +76,7 @@ if __name__ == '__main__':
     cols = args.cols
     delim = args.delim.decode('string-escape') if args.delim else ','
 
-    header, rows = read(infile)
+    header, rows = read(infile, delimiter=delim)
     drops = find(header, cols)
 
     mheader = imask(header, drops)
