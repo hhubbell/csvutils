@@ -66,6 +66,7 @@ if __name__ == '__main__':
     #    default=sys.stdout)
     parser.add_argument('cols',
         nargs='+')
+    parser.add_argument('-d', '--delim')
 
     args = parser.parse_args()
     
@@ -73,6 +74,7 @@ if __name__ == '__main__':
     #outfile = args.outfile
     outfile = sys.stdout
     cols = args.cols
+    delim = args.delim.decode('string-escape') if args.delim else ','
 
     header, rows = read(infile)
     drops = find(header, cols)

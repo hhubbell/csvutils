@@ -103,6 +103,7 @@ if __name__ == '__main__':
     parser.add_argument('infile',
         type=argparse.FileType('r'),
         default=sys.stdin)
+    parser.add_argument('-d', '--delim')
     parser.add_argument('-m', '--maxlength',
         type=int)
     parser.add_argument('-p', '--padding',
@@ -113,6 +114,7 @@ if __name__ == '__main__':
     infile = args.infile
     maxlength = args.maxlength
     padding = args.padding or 0
+    delim = args.delim.decode('string-escape') if args.delim else ','
 
     header, rows = read(infile)
     fmtrows = tabulate(header, rows, maxlength, padding)

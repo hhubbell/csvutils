@@ -72,15 +72,18 @@ if __name__ == '__main__':
         nargs=argparse.REMAINDER)
     parser.add_argument('-a', '--alphabetize',
         action='store_true')
-    parser.add_argument('-t', '--tabulate',
-        action='store_true')
+    parser.add_argument('-d', '--delim')
     parser.add_argument('-p', '--precision',
         type=int)
+    parser.add_argument('-t', '--tabulate',
+        action='store_true')
+
 
     args = parser.parse_args()
 
     infile = args.infile
     cols = args.cols
+    delim = args.delim.decode('string-escape') if args.delim else ','
 
     header, rows = read(infile)
     tosum = find(header, cols)
