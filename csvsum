@@ -11,7 +11,7 @@ import argparse
 import csv
 import sys
 
-OUT = '{:<{}} {:>{}}'
+OUT = '{:<{}} {:>{}.2f}'
 
 def read(src, header=True, delimiter=','):
     """
