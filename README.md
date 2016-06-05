@@ -54,7 +54,7 @@ Tax:        40000
 Margin:    600000
 ```
 
-#### csvtab:
+#### csvtab
 `usage: csvtab [-h] [-d DELIM] [-m MAXLENGTH] [-p PADDING] [infile]`
 
 Tabulate a csv file for easier viewing and print result to stdout.
@@ -70,4 +70,14 @@ name salary title
 John 100... Boss
 Jim  880... Peon
 Tim  760... Intern
+```
+
+#### csvtohtml
+`usage: csvtohtml [-h] [-d DELIM] [infile]`
+
+Transform a csv into an html table. Great for formatting stuff in a pipeline.
+```bash
+$ csvtohtml file.csv > table.html
+
+$ mysql < sales.sql | csvtohtml -d "\t" | pandoc -s -H company_style.css | bcat  # bcat is awesome
 ```

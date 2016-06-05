@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+#
+# Author:       Harrison Hubbell <harrison.hubbell@logicsupply.com>
+# Created:      06/05/2016
+# Description:  Create an HTML table from a CSV
+#
+
+from __future__ import print_function
+import argparse
+import csv
+import sys
+
+def read(src, header=True, delimiter=','):
+    """
+    Open a specified CSV file and read it.
+    :param src:         File path
+    :option header:     CSV file has a header row
+    :option delimiter:  CSV item delimiter
+    :return tuple:      header, rows tuple
+    """
+    reader = csv.reader(src, delimiter=delimiter)
+    head = next(reader) if header is True else None
+
+    return head, list(reader)
+
+def makerow(row, header=False):
+    """
+    Format one row of data
+    :param row:         Row to format
+    :option header:     Header row flag
+    :return str:        Table row
+    """
+    col = '<td>{}</td>' if header is False else '<th>{}</th>'
+    return '<tr>{}</tr>'.format(''.join(col.format(x) for x in row))
+
+def write(header, rows):
+    """
+    Dump data to file object
+    :param fileobj:     File object to write to
+    :param header:      csv header
+    :param rows:        csv rows
+    """
+    try:
+        print('<table>')
+        print(makerow(header, header=True))
+        for row in rows:
+            print(makerow(row))
+        print('</table>')
+
+    except IOError:
+        pass
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('infile', nargs='?',
+        type=argparse.FileType('r'),
+        default=sys.stdin)
+    parser.add_argument('-d', '--delim')
+
+    args = parser.parse_args()
+    
+    infile = args.infile
+    delim = args.delim.decode('string-escape') if args.delim else ','
+
+    write(*read(infile, delimiter=delim))
