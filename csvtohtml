@@ -53,9 +53,13 @@ def write(header, rows, pretty=False):
     """
     try:
         print('<table>')
-        print(makerow(header, header=True, tabs=pretty))
+
+        if header is not None:
+            print(makerow(header, header=True, tabs=pretty))
+        
         for row in rows:
             print(makerow(row, tabs=pretty))
+
         print('</table>')
 
     except IOError:
@@ -69,6 +73,8 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--delim',
         nargs='?',
         default=',')
+    parser.add_argument('-N', '--no-header',
+        action='store_false')
     parser.add_argument('-p', '--pretty',
         action='store_true',
         help='Try to make the html human readable')
@@ -76,6 +82,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     infile = args.infile
+    no_head = args.no_header
     delim = args.delim.decode('string-escape')
 
-    write(*read(infile, delimiter=delim), pretty=args.pretty)
+    write(*read(infile, header=no_head, delimiter=delim), pretty=args.pretty)
