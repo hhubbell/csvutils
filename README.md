@@ -4,7 +4,11 @@ A useful group of utilities for exploring and manipulating csv files.
 
 ## Utilities
 #### csvavg
-`usage: csvavg [-h] [-a] [-d DELIM] [-p PRECISION] [-t] [infile] ...`
+```bash
+usage: csvavg [-h] [-a] [-d [INFILE_DELIM]] [-D [OUTFILE_DELIM]]
+              [-p PRECISION] [-t]
+              [infile] ...
+```
 
 Average columns of a csv and print the result to stdout. Optionally,
 tabulate and alphabetize output.
@@ -14,7 +18,9 @@ Margin%: .35
 ```
 
 #### csvdrop
-`usage: csvdrop [-h] [-d DELIM] [infile] cols [cols ...]`
+```bash
+usage: csvdrop [-h] [-d DELIM] [infile] cols [cols ...]
+```
 
 Drop columns from a csv and print the result to stdout.  This can be useful
 for comparing a file before and after a change is made, if the change includes
@@ -26,7 +32,9 @@ $ diff <(sort before.csv) <(csvdrop after.csv NewColumn1 | sort)
 ```
 
 #### csvkeep
-`usage: csvkeep [-h] [-d DELIM] [infile] cols [cols ...]`
+```bash
+usage: csvkeep [-h] [-d DELIM] [infile] cols [cols ...]
+```
 
 The opposite of `csvdrop`; keep only the columns listed.
 ```bash
@@ -38,7 +46,11 @@ Kim
 ```
 
 #### csvsum
-`usage: csvsum [-h] [-a] [-d DELIM] [-p PRECISION] [-t] [infile] ...`
+```bash
+usage: csvsum [-h] [-a] [-d [INFILE_DELIM]] [-D [OUTFILE_DELIM]]
+              [-p PRECISION] [-t]
+              [infile] ...
+```
 
 Sum columns of a csv and print the result to stdout.  Optionally,
 tabulate and alphabetize output.
@@ -55,7 +67,9 @@ Margin:    600000
 ```
 
 #### csvtab
-`usage: csvtab [-h] [-d DELIM] [-m MAXLENGTH] [-p PADDING] [infile]`
+```bash
+usage: csvtab [-h] [-d DELIM] [-m MAXLENGTH] [-p PADDING] [infile]
+```
 
 Tabulate a csv file for easier viewing and print result to stdout.
 ```bash
@@ -73,7 +87,9 @@ Tim  760... Intern
 ```
 
 #### csvtohtml
-`usage: csvtohtml [-h] [-d DELIM] [infile]`
+```bash
+usage: csvtohtml [-h] [-d [DELIM]] [-N] [-p] [infile]
+```
 
 Transform a csv into an html table. Great for formatting stuff in a pipeline.
 ```bash
