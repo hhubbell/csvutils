@@ -61,14 +61,16 @@ if __name__ == '__main__':
         default=sys.stdin)
     parser.add_argument('cols',
         nargs='+')
-    parser.add_argument('-d', '--delim')
+    parser.add_argument('-d', '--delim',
+        nargs='?',
+        default=',')
 
     args = parser.parse_args()
     
     infile = args.infile
     outfile = sys.stdout
     cols = args.cols
-    delim = args.delim.decode('string-escape') if args.delim else ','
+    delim = args.delim.decode('string-escape')
 
     header, rows = read(infile, delimiter=delim)
     keeps = find(header, cols)

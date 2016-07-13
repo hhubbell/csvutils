@@ -11,7 +11,7 @@ import argparse
 import csv
 import sys
 
-OUT = '{:<{}} {:>{}}'
+OUT = '{:<{}}{:>{}}'
 
 def read(src, header=True, delimiter=','):
     """
@@ -72,7 +72,12 @@ if __name__ == '__main__':
         nargs=argparse.REMAINDER)
     parser.add_argument('-a', '--alphabetize',
         action='store_true')
-    parser.add_argument('-d', '--delim')
+    parser.add_argument('-d', '--infile-delim',
+        nargs='?',
+        default=',')
+    parser.add_argument('-D', '--outfile-delim',
+        nargs='?',
+        default=': ')
     parser.add_argument('-p', '--precision',
         type=int)
     parser.add_argument('-t', '--tabulate',
@@ -83,7 +88,8 @@ if __name__ == '__main__':
 
     infile = args.infile
     cols = args.cols
-    delim = args.delim.decode('string-escape') if args.delim else ','
+    delim = args.infile_delim.decode('string-escape')
+    seperator = args.outfile_delim.decode('string-escape')
 
     header, rows = read(infile, delimiter=delim)
     tosum = find(header, cols)
@@ -96,7 +102,7 @@ if __name__ == '__main__':
         sums = ['{:.{}f}'.format(x, args.precision) for x in sums]
 
     if args.tabulate is True:
-        hwidth = max(len(header[i]) for i in tosum) + 1
+        hwidth = max(len(header[i]) for i in tosum) + 2
         rwidth = max(len(str(x)) for x in sums)
     else:
         hwidth = ''
@@ -108,4 +114,4 @@ if __name__ == '__main__':
         zipped = zip(tosum, sums)
 
     for index, value in zipped:
-        print(OUT.format(header[index] + ':', hwidth, value, rwidth))
+        print(OUT.format(header[index] + seperator, hwidth, value, rwidth))
