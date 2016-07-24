@@ -1,4 +1,4 @@
-#/usr/bin/env python
+#!/usr/bin/env python
 #
 # Sum the specified columns from an input csv and return the
 # result to stdout.
@@ -11,17 +11,11 @@ import sys
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?',
-        type=argparse.FileType('r'),
-        default=sys.stdin)
+    parser = cu.default_arguments()
     parser.add_argument('cols',
         nargs=argparse.REMAINDER)
     parser.add_argument('-a', '--alphabetize',
         action='store_true')
-    parser.add_argument('-d', '--infile-delim',
-        nargs='?',
-        default=',')
     parser.add_argument('-D', '--outfile-delim',
         nargs='?',
         default=': ')
@@ -32,7 +26,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    delim = args.infile_delim.decode('string-escape')
+    delim = args.delim.decode('string-escape')
     seper = args.outfile_delim.decode('string-escape')
 
     header, rows = cu.read(args.infile, delimiter=delim)

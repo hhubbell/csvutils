@@ -3,7 +3,6 @@
 # The opposite of csvdrop
 #
 
-import argparse
 import csvutils as cu
 import sys
 
@@ -18,15 +17,9 @@ def imask(vals, indexes):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?',
-        type=argparse.FileType('r'),
-        default=sys.stdin)
+    parser = cu.default_arguments()
     parser.add_argument('cols',
         nargs='+')
-    parser.add_argument('-d', '--delim',
-        nargs='?',
-        default=',')
 
     args = parser.parse_args()
     

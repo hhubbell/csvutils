@@ -4,7 +4,6 @@
 #
 
 from __future__ import print_function
-import argparse
 import csvutils as cu
 import sys
 
@@ -52,13 +51,7 @@ def write(header, rows, pretty=False):
         pass
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?',
-        type=argparse.FileType('r'),
-        default=sys.stdin)
-    parser.add_argument('-d', '--delim',
-        nargs='?',
-        default=',')
+    parser = cu.default_arguments()
     parser.add_argument('-N', '--no-header',
         action='store_false')
     parser.add_argument('-p', '--pretty',
