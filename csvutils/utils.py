@@ -3,10 +3,8 @@
 #   Constants
 #   File IO utilities
 #   Iterable manipulation
-#   Math
 #
 
-from __future__ import division
 import csv
 
 
