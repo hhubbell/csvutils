@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 #
-# Author:       Harrison Hubbell <harrison.hubbell@logicsupply.com>
-# Created:      11/09/2015
-# Description:  Sum the specified columns from an input csv and
-#               return the result to STDOUT. Use python3 for better
-#               unicode support
+# Tabulate a csv for better viewing from the console and return the
+# result to stdout
 #
 
 from __future__ import print_function

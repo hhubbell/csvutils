@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 #
-# Author:       Harrison Hubbell <harrison.hubbell@logicsupply.com>
-# Created:      11/09/2015
-# Description:  The opposite of csvdrop
+# The opposite of csvdrop
 #
 
 import argparse

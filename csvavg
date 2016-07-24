@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 #
-# Author:       Harrison Hubbell <harrison.hubbell@logicsupply.com>
-# Created:      11/09/2015
-# Description:  Average the specified columns from an input csv and
-#               return the result to STDOUT.
+# Average the specified columns from an input csv and return the
+# result to stdout
 #
 
 from __future__ import division, print_function
