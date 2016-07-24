@@ -6,7 +6,7 @@
 
 from __future__ import print_function
 import argparse
-import csv
+import csvutils as cu
 import sys
 
 def align(values):
@@ -58,19 +58,6 @@ def tabulate(header, rows, maxw=None, pad=0):
 
     return list(zip(*fmtcol))
 
-def read(src, header=True, delimiter=','):
-    """
-    Open a specified CSV file and read it.
-    :param src:         File path
-    :option header:     CSV file has a header row
-    :option delimiter:  CSV item delimiter
-    :return tuple:      header, rows tuple
-    """
-    reader = csv.reader(src, delimiter=delimiter)
-    head = next(reader) if header is True else None
-
-    return head, list(reader)
-
 def trunc(string, width, replace='...'):
     """
     Truncate a string if it exceeds the specified width, replacing
@@ -110,13 +97,11 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    infile = args.infile
-    maxlength = args.maxlength
     padding = args.padding or 0
     delim = args.delim.decode('string-escape')
 
-    header, rows = read(infile, delimiter=delim)
-    fmtrows = tabulate(header, rows, maxlength, padding)
+    header, rows = cu.read(args.infile, delimiter=delim)
+    fmtrows = tabulate(header, rows, args.maxlength, padding)
     fmtheader = fmtrows.pop(0)
 
     write(fmtheader, fmtrows)

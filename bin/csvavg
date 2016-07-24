@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+# Average the specified columns from an input csv and return the
+# result to stdout
+#
+
+from __future__ import absolute_import, division, print_function
+import argparse
+import csvutils as cu
+import sys
+
+
+def avg(values):
+    """
+    Return the average of a list of numbers
+    :param values:      Iter of values
+    :return float:      Average of values
+    """
+    values = list(values)
+    return sum(values) / len(values)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('infile', nargs='?',
+        type=argparse.FileType('r'),
+        default=sys.stdin)
+    parser.add_argument('cols',
+        nargs=argparse.REMAINDER)
+    parser.add_argument('-a', '--alphabetize',
+        action='store_true')
+    parser.add_argument('-d', '--infile-delim',
+        nargs='?',
+        default=',')
+    parser.add_argument('-D', '--outfile-delim',
+        nargs='?',
+        default=': ')
+    parser.add_argument('-p', '--precision',
+        type=int)
+    parser.add_argument('-t', '--tabulate',
+        action='store_true')
+
+    args = parser.parse_args()
+
+    delim = args.infile_delim.decode('string-escape')
+    seper = args.outfile_delim.decode('string-escape')
+
+    header, rows = cu.read(args.infile, delimiter=delim)
+    toavg = cu.indexes(header, args.cols)
+    avgs = []
+
+    for index in toavg:
+        avgs.append(avg(cu.tofloat(x[index]) for x in rows))
+
+    if args.precision:
+        avgs = ['{:.{}f}'.format(x, args.precision) for x in avgs]
+
+    if args.tabulate is True:
+        hwidth = max(len(header[i]) for i in toavg) + len(seper)
+        rwidth = max(len(str(x)) for x in avgs)
+    else:
+        hwidth = ''
+        rwidth = ''
+
+    if args.alphabetize is True:
+        zipped = sorted(zip(toavg, avgs), key=lambda x: header[x[0]])
+    else:
+        zipped = zip(toavg, avgs)
+
+    for index, value in zipped:
+        key = header[index] + seper
+        print(cu.KEY_VALUE_STR_FORMAT.format(key, hwidth, value, rwidth))

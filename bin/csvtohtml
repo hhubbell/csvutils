@@ -5,21 +5,9 @@
 
 from __future__ import print_function
 import argparse
-import csv
+import csvutils as cu
 import sys
 
-def read(src, header=True, delimiter=','):
-    """
-    Open a specified CSV file and read it.
-    :param src:         File path
-    :option header:     CSV file has a header row
-    :option delimiter:  CSV item delimiter
-    :return tuple:      header, rows tuple
-    """
-    reader = csv.reader(src, delimiter=delimiter)
-    head = next(reader) if header is True else None
-
-    return head, list(reader)
 
 def makerow(row, header=False, tabs=False):
     """
@@ -83,4 +71,4 @@ if __name__ == '__main__':
     no_head = args.no_header
     delim = args.delim.decode('string-escape')
 
-    write(*read(infile, header=no_head, delimiter=delim), pretty=args.pretty)
+    write(*cu.read(infile, header=no_head, delimiter=delim), pretty=args.pretty)

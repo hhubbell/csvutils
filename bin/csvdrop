@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+#
+# Remove the specified columns from an input csv and return the 
+# result to stdout.
+#
+
+import argparse
+import csvutils as cu
+import sys
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('infile', nargs='?',
+        type=argparse.FileType('r'),
+        default=sys.stdin)
+    parser.add_argument('cols',
+        nargs='+')
+    parser.add_argument('-d', '--delim',
+        nargs='?',
+        default=',')
+
+    args = parser.parse_args()
+
+    outfile = sys.stdout
+    delim = args.delim.decode('string-escape')
+
+    header, rows = cu.read(args.infile, delimiter=delim)
+    drops = cu.indexes(header, args.cols)
+
+    mheader = cu.imask(header, drops)
+    mrows = [cu.imask(x, drops) for x in rows]
+
+    cu.write(outfile, mheader, mrows)
