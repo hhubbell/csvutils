@@ -52,8 +52,9 @@ def write(header, rows, pretty=False):
 
 if __name__ == '__main__':
     parser = cu.default_arguments()
-    parser.add_argument('-N', '--no-header',
-        action='store_false')
+    parser.add_argument('-D', '--no-display-header',
+        action='store_false',
+        dest='display_header')
     parser.add_argument('-p', '--pretty',
         action='store_true',
         help='Try to make the html human readable')
@@ -61,7 +62,12 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     infile = args.infile
-    no_head = args.no_header
+    header = args.header and args.display_header
     delim = args.delim.decode('string-escape')
 
-    write(*cu.read(infile, header=no_head, delimiter=delim), pretty=args.pretty)
+    header, rows = cu.read(infile, header=header, delimiter=delim)
+
+    if header is None and args.header is False:
+        header = cu.generic_header(len(rows[0]))
+
+    write(header, rows, pretty=args.pretty)

@@ -51,9 +51,7 @@ def tabulate(header, rows, maxw=None, pad=0):
         calign = align(vals[1:])
         cmax = max(len(x) for x in vals) + pad
         cmax = maxw if maxw is not None and maxw < cmax else cmax
-        fmtcol.append(map(
-            lambda x: fmt(trunc(x, cmax), cmax, calign) if len(x) > cmax else fmt(x, cmax, calign),
-            vals))
+        fmtcol.append(map(lambda x: fmt(trunc(x, cmax), cmax, calign), vals))
 
     return list(zip(*fmtcol))
 
@@ -66,7 +64,7 @@ def trunc(string, width, replace='...'):
     :option replace:    Replace truncated data with
     :return string:     New truncated string
     """
-    return string[:width - len(replace)] + replace
+    return string[:width - len(replace)] + replace if len(string) > width else string
 
 def write(header, rows):
     """

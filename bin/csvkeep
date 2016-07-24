@@ -27,6 +27,10 @@ if __name__ == '__main__':
     delim = args.delim.decode('string-escape')
 
     header, rows = cu.read(args.infile, delimiter=delim)
+
+    if header is None:
+        header = cu.generic_header(len(rows[0]))
+
     keeps = cu.indexes(header, args.cols)
 
     mheader = imask(header, keeps)

@@ -11,6 +11,15 @@ import csv
 KEY_VALUE_STR_FORMAT = '{:<{}}{:>{}}'
 
 
+def generic_header(columns):
+    """
+    Generate a list of generic header columns to use
+    if the csv file does not have a header.
+    :param columns:     Number of columns to generate
+    :return list:       Generic column list
+    """
+    return ['col{}'.format(x) for x in range(columns)]
+
 def imask(vals, indexes):
     """
     Mask a list based on a list of indexes

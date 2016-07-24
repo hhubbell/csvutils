@@ -17,5 +17,7 @@ def default_arguments():
     parser.add_argument('-d', '--delim',
         nargs='?',
         default=',')
-
+    parser.add_argument('-N', '--no-header',
+        action='store_false',
+        dest='header')
     return parser
