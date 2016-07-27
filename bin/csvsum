@@ -30,6 +30,10 @@ if __name__ == '__main__':
     seper = args.outfile_delim.decode('string-escape')
 
     header, rows = cu.read(args.infile, delimiter=delim)
+
+    if header is None:
+        header = cu.generic_header(len(rows[0]))
+
     tosum = cu.indexes(header, args.cols)
     sums = []
 

@@ -38,7 +38,11 @@ if __name__ == '__main__':
     delim = args.delim.decode('string-escape')
     seper = args.outfile_delim.decode('string-escape')
 
-    header, rows = cu.read(args.infile, delimiter=delim)
+    header, rows = cu.read(args.infile, header=args.header, delimiter=delim)
+
+    if header is None:
+        header = cu.generic_header(len(rows[0]))
+
     toavg = cu.indexes(header, args.cols)
     avgs = []
 
