@@ -9,7 +9,7 @@ import csv
 
 
 KEY_VALUE_STR_FORMAT = '{:<{}}{:>{}}'
-
+TAB_WIDTH = 4
 
 def generic_header(columns):
     """

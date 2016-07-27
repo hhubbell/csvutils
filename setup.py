@@ -13,4 +13,5 @@ setup(
         'bin/csvkeep',
         'bin/csvsum',
         'bin/csvtab',
-        'bin/csvtohtml'])
+        'bin/csvtohtml',
+        'bin/csvtojson'])
