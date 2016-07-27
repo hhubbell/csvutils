@@ -3,7 +3,6 @@
 # Create an HTML table from a csv and return the result to stdout.
 #
 
-from __future__ import print_function
 import csvutils as cu
 import sys
 
