@@ -28,7 +28,7 @@ def makerow(row, header=False, tabs=False):
         n=newl,
         t=tabf)
 
-def write(header, rows, pretty=False):
+def write(fileobj, header, rows, pretty=False):
     """
     Dump data to file object
     :param fileobj:     File object to write to
@@ -36,19 +36,16 @@ def write(header, rows, pretty=False):
     :param rows:        csv rows
     :option pretty:     True makes html readable
     """
+    TABLE = '<table>\n{}{}\n</table>\n'
+
     try:
-        print('<table>')
+        h = makerow(header, header=True, tabs=pretty) if header else ''
+        r = (makerow(x, tabs=pretty) for x in rows)
 
-        if header is not None:
-            print(makerow(header, header=True, tabs=pretty))
-        
-        for row in rows:
-            print(makerow(row, tabs=pretty))
-
-        print('</table>')
+        fileobj.write(TABLE.format(h, '\n'.join(r)))
 
     except IOError:
-        pass
+        fileobj.close()
 
 if __name__ == '__main__':
     parser = cu.default_arguments()
@@ -62,6 +59,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     infile = args.infile
+    outfile = sys.stdout
     header = args.header and args.display_header
     delim = args.delim.decode('string-escape')
 
@@ -70,4 +68,4 @@ if __name__ == '__main__':
     if header is None and args.header is False:
         header = cu.generic_header(len(rows[0]))
 
-    write(header, rows, pretty=args.pretty)
+    write(outfile, header, rows, pretty=args.pretty)
