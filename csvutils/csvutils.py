@@ -101,4 +101,4 @@ def tabulate(header, rows, maxw=None, pad=0):
         cmax = maxw if maxw is not None and maxw < cmax else cmax
         fmtcol.append([fmt(helpers.trunc(x, cmax), cmax, calign) for x in vals])
 
-    return '\n'.join(' '.join(x) for x in zip(*fmtcol)) + '\n'
+    return '\n'.join(' '.join(x) for x in zip(*fmtcol))

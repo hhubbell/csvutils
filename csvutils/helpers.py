@@ -134,7 +134,19 @@ def trunc(string, width, replace='...'):
     """
     return string[:width - len(replace)] + replace if len(string) > width else string
 
-def write(fileobj, header, rows):
+def write(fileobj, string, newline='\n'):
+    """
+    Dump a string to a file object
+    :param fileobj:     File object to write to
+    :param string:      String to write
+    :option newline:    Line ending
+    """
+    try:
+        fileobj.write(string + newline)
+    except IOError:
+        fileobj.close()
+
+def writecsv(fileobj, header, rows):
     """
     Dump a csv to file object
     :param fileobj:     File object to write to
