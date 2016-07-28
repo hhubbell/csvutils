@@ -16,7 +16,7 @@ def makerow(row, header=False, tabs=False):
                         will be 4 spaces
     :return str:        Table row
     """
-    tabf = '    ' if tabs is True else ''
+    tabf = ' ' * cu.TAB_WIDTH if tabs is True else ''
     newl = '\n' if tabs is True else ''
     joiner = '{}{}'.format(newl, tabf * 2)
 
@@ -56,7 +56,7 @@ if __name__ == '__main__':
         help='Try to make the html human readable')
 
     args = parser.parse_args()
-    
+
     infile = args.infile
     outfile = sys.stdout
     header = args.header and args.display_header
