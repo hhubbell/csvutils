@@ -23,6 +23,11 @@ def _default_arguments():
     parser.add_argument('-N', '--no-header',
         action='store_false',
         dest='header')
+    parser.add_argument('-o', '--outfile',
+        nargs='?',
+        type=argparse.FileType('w'),
+        default=sys.stdout)
+
     return parser
 
 def csvavg():
@@ -46,12 +51,10 @@ def csvavg():
     delim = args.delim.decode('string-escape')
     seper = args.outfile_delim.decode('string-escape')
 
-    header, rows = helpers.read(args.infile, header=args.header, delimiter=delim)
-
-    if header is None:
-        header = helpers.generic_header(len(rows[0]))
-
-    cols, avgs = zip(*csvutils.col_apply(header, rows, helpers.avg, args.cols))
+    cols, avgs = zip(*csvutils.col_apply(args.infile, helpers.avg,
+        columns=args.cols,
+        head=args.header,
+        delimiter=delim))
 
     if args.precision:
         avgs = ['{:.{}f}'.format(x, args.precision) for x in avgs]
@@ -70,7 +73,9 @@ def csvavg():
 
     for column, value in zipped:
         key = column + seper
-        print(helpers.KEY_VALUE_STR_FORMAT.format(key, hwidth, value, rwidth))
+        line = helpers.KEY_VALUE_STR_FORMAT.format(key, hwidth, value, rwidth)
+
+        helpers.write(args.outfile, line)
 
 def csvdrop():
     """
@@ -81,15 +86,12 @@ def csvdrop():
 
     args = parser.parse_args()
 
-    outfile = sys.stdout
     delim = args.delim.decode('string-escape')
 
-    header, rows = helpers.read(args.infile, header=args.header, delimiter=delim)
-
-    if header is None:
-        header = helpers.generic_header(len(rows[0]))
-
-    helpers.write(outfile, *csvutils.drop(header, rows, args.cols))
+    helpers.writecsv(args.outfile, *csvutils.drop(args.infile,
+        columns=args.cols,
+        head=args.header,
+        delimiter=delim))
 
 def csvkeep():
     """
@@ -100,15 +102,12 @@ def csvkeep():
 
     args = parser.parse_args()
 
-    outfile = sys.stdout
     delim = args.delim.decode('string-escape')
 
-    header, rows = helpers.read(args.infile, header=args.header, delimiter=delim)
-
-    if header is None:
-        header = helpers.generic_header(len(rows[0]))
-
-    helpers.write(outfile, *csvutils.keep(header, rows, args.cols))
+    helpers.writecsv(args.outfile, *csvutils.keep(args.infile,
+        columns=args.cols,
+        head=args.header,
+        delimiter=delim))
 
 def csvsum():
     """
@@ -131,12 +130,10 @@ def csvsum():
     delim = args.delim.decode('string-escape')
     seper = args.outfile_delim.decode('string-escape')
 
-    header, rows = helpers.read(args.infile, delimiter=delim)
-
-    if header is None:
-        header = helpers.generic_header(len(rows[0]))
-
-    cols, sums = zip(*csvutils.col_apply(header, rows, sum, args.cols))
+    cols, sums = zip(*csvutils.col_apply(args.infile, sum,
+        columns=args.cols,
+        head=args.header,
+        delimiter=delim))
 
     if args.precision:
         sums = ['{:.{}f}'.format(x, args.precision) for x in sums]
@@ -155,7 +152,9 @@ def csvsum():
 
     for column, value in zipped:
         key = column + seper
-        print(helpers.KEY_VALUE_STR_FORMAT.format(key, hwidth, value, rwidth))
+        line = helpers.KEY_VALUE_STR_FORMAT.format(key, hwidth, value, rwidth)
+
+        helpers.write(args.outfile, line)
 
 def csvtab():
     """
@@ -165,20 +164,18 @@ def csvtab():
     parser.add_argument('-m', '--maxlength',
         type=int)
     parser.add_argument('-p', '--padding',
-        type=int)
+        nargs='?',
+        type=int,
+        default=0)
 
     args = parser.parse_args()
 
-    outfile = sys.stdout
-    padding = args.padding or 0
     delim = args.delim.decode('string-escape')
 
-    header, rows = helpers.read(args.infile, delimiter=delim)
-
-    try:
-        outfile.write(csvutils.tabulate(header, rows, args.maxlength, padding))
-    except IOError:
-        outfile.close()
+    helpers.write(args.outfile, csvutils.tabulate(args.infile,
+        maxw=args.maxlength,
+        pad=args.padding,
+        delimiter=delim))
 
 def csvtohtml():
     """
@@ -195,19 +192,13 @@ def csvtohtml():
     args = parser.parse_args()
 
     infile = args.infile
-    outfile = sys.stdout
-    header = args.header and args.display_header
     delim = args.delim.decode('string-escape')
 
-    header, rows = helpers.read(infile, header=header, delimiter=delim)
-
-    if header is None and args.header is False:
-        header = helpers.generic_header(len(rows[0]))
-
-    try:
-        outfile.write(csvutils.html(header, rows, pretty=args.pretty))
-    except IOError:
-        outfile.close()
+    helpers.write(args.outfile, csvutils.html(args.infile,
+        pretty=args.pretty,
+        head=args.header,
+        display_header=args.display_header,
+        delimiter=delim))
 
 def csvtojson():
     """
@@ -220,14 +211,12 @@ def csvtojson():
 
     args = parser.parse_args()
 
-    infile = args.infile
-    outfile = sys.stdout
     delim = args.delim.decode('string-escape')
     tabs = helpers.TAB_WIDTH if args.pretty else None
 
-    header, rows = helpers.read(infile, header=args.header, delimiter=delim)
-
-    if header is None and args.header is False:
-        header = helpers.generic_header(len(rows[0]))
-
-    json.dump(csvutils.json(header, rows), outfile, indent=tabs, sort_keys=True)
+    json.dump(csvutils.json(args.infile,
+            head=args.header,
+            delimiter=delim),
+        args.outfile,
+        indent=tabs,
+        sort_keys=True)
