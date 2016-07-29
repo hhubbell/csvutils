@@ -1,8 +1,8 @@
 # CSV Utils
 
-A useful group of utilities for exploring and manipulating csv files.
+A group of utilities for exploring and manipulating csv files.
 
-## Utilities
+## Command Line Utilities
 #### csvavg
 ```bash
 usage: csvavg [-h] [-a] [-d [INFILE_DELIM]] [-D [OUTFILE_DELIM]]
@@ -96,4 +96,14 @@ Transform a csv into an html table. Great for formatting stuff in a pipeline.
 $ csvtohtml file.csv > table.html
 
 $ mysql < sales.sql | csvtohtml -d "\t" | pandoc -s -H company_style.css | bcat  # bcat is awesome
+```
+
+## Python Library
+`csvutils` is also a Python library.  All command line functions can be used in a python script.  For instance:
+```python
+>>> with open('my_csv.csv', 'r') as f:
+...     csvutils.col_apply(f, sum, columns=['Salary'])
+...
+
+[('Salary', 1004567)]
 ```
