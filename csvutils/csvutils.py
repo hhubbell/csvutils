@@ -6,9 +6,9 @@ from __future__ import absolute_import
 from . import helpers
 
 
-def col_apply(file_obj, func, columns=None, head=True, delimiter=','):
+def fmap(file_obj, func, columns=None, head=True, delimiter=','):
     """
-    Apply a function on given csv columns
+    Apply a function across columns in a csv file
     :param file_obj:    Open csv file handle
     :param func:        Function to apply
     :option columns:    CSV header columns to average, default all

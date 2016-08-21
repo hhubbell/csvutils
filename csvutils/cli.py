@@ -49,7 +49,7 @@ def csvavg():
     args = parser.parse_args()
     seper = args.outfile_delim
 
-    cols, avgs = zip(*csvutils.col_apply(args.infile, helpers.avg,
+    cols, avgs = zip(*csvutils.fmap(args.infile, helpers.avg,
         columns=args.cols,
         head=args.header,
         delimiter=args.delim))
@@ -123,7 +123,7 @@ def csvsum():
 
     seper = args.outfile_delim
 
-    cols, sums = zip(*csvutils.col_apply(args.infile, sum,
+    cols, sums = zip(*csvutils.fmap(args.infile, sum,
         columns=args.cols,
         head=args.header,
         delimiter=args.delim))
