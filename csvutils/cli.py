@@ -65,7 +65,7 @@ def csvavg():
         rwidth = ''
 
     if args.alphabetize is True:
-        zipped = sorted(zip(cols, avgs), key=lambda x: header[x[0]])
+        zipped = sorted(zip(cols, avgs), key=lambda x: args.header[x[0]])
     else:
         zipped = zip(cols, avgs)
 
@@ -120,7 +120,6 @@ def csvsum():
         action='store_true')
 
     args = parser.parse_args()
-
     seper = args.outfile_delim
 
     cols, sums = zip(*csvutils.fmap(args.infile, sum,
@@ -139,7 +138,7 @@ def csvsum():
         rwidth = ''
 
     if args.alphabetize is True:
-        zipped = sorted(zip(cols, sums), key=lambda x: header[x[0]])
+        zipped = sorted(zip(cols, sums), key=lambda x: args.header[x[0]])
     else:
         zipped = zip(cols, sums)
 
