@@ -7,7 +7,6 @@
 
 from __future__ import division
 import csv
-import decimal
 
 
 KEY_VALUE_STR_FORMAT = '{:<{}}{:>{}}'
@@ -110,19 +109,6 @@ def read(src, header=True, delimiter=','):
     head = next(reader) if header is True else None
 
     return head, list(reader)
-
-def tofloat(value):
-    """
-    Convert a value to a float.  Return 0 for any failures.
-    :param value:       Value to convert
-    :return float:      Converted value
-    """
-    try:
-        number = decimal.Decimal(value)
-    except decimal.InvalidOperation:
-        number = decimal.Decimal(0)
-
-    return number
 
 def trunc(string, width, replace='...'):
     """

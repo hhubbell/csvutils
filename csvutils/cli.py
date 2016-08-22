@@ -27,6 +27,9 @@ def _default_arguments():
         nargs='?',
         type=argparse.FileType('w'),
         default=sys.stdout)
+    parser.add_argument('--no-strict',
+        action='store_false',
+        dest='strict')
 
     return parser
 
@@ -52,7 +55,8 @@ def csvavg():
     cols, avgs = zip(*csvutils.fmap(args.infile, helpers.avg,
         columns=args.cols,
         head=args.header,
-        delimiter=args.delim))
+        delimiter=args.delim,
+        strict=args.strict))
 
     if args.precision:
         avgs = ['{:.{}f}'.format(x, args.precision) for x in avgs]

@@ -3,10 +3,10 @@
 #
 
 from __future__ import absolute_import
-from . import helpers
+from . import helpers, types
 
 
-def fmap(file_obj, func, columns=None, head=True, delimiter=','):
+def fmap(file_obj, func, columns=None, head=True, delimiter=',', strict=True):
     """
     Apply a function across columns in a csv file
     :param file_obj:    Open csv file handle
@@ -14,6 +14,8 @@ def fmap(file_obj, func, columns=None, head=True, delimiter=','):
     :option columns:    CSV header columns to average, default all
     :option head:       Boolean if csv has header row
     :option delimiter:  Column delimiter
+    :option strict:     Assume that all rows in a column are the same type
+                        and fail to produce a result otherwise.
     :return list:       List of column: result tuples
     """
     columns = columns if columns is not None else []
@@ -22,13 +24,14 @@ def fmap(file_obj, func, columns=None, head=True, delimiter=','):
     if header is None:
         header = helpers.generic_header(len(rows[0]))
 
-    to_app = helpers.indexes(header, columns)
+    indexes = helpers.indexes(header, columns)
+    col_types = types.get_all(rows, indexes, strict=strict)
+
     res = []
+    for index, col_type in zip(indexes, col_types):
+        res.append(func(col_type(x[index]) for x in rows))
 
-    for index in to_app:
-        res.append(func(helpers.tofloat(x[index]) for x in rows))
-
-    return zip(helpers.ikeep(header, to_app), res)
+    return zip(helpers.ikeep(header, indexes), res)
 
 def drop(file_obj, columns=None, head=True, delimiter=','):
     """
