@@ -3,7 +3,10 @@
 #
 
 from __future__ import absolute_import
-from . import helpers, parsers
+from . import parsers
+from .guts import helpers, database
+import sqlite3
+import os
 
 
 def convert(fileobj, informat, outformat):
@@ -80,6 +83,27 @@ def keep(fileobj, parser=None, columns=None):
     mod_r = [helpers.ikeep(x, keeps) for x in rows]
 
     return mod_h, mod_r
+
+def sql(file_objs, name, head=True, delimiter=','):
+    """
+    """
+    conn = sqlite3.connect(name)
+    cur = conn.cursor()
+
+    for fobj in file_objs:
+        header, rows = helpers.read(fobj, header=head, delimiter=delimiter)
+        table = os.path.splitext(os.path.basename(fobj.name))[0]
+
+        if header is None:
+            header = helpers.generic_header(len(rows[0]))
+
+        schema = database.create_schema(table, header)
+        insert = database.create_insert(table, header, rows)
+
+        cur.execute(schema)
+        cur.execute(insert)
+
+    return conn
 
 def tabulate(fileobj, parser=None, maxw=None, pad=0):
     """

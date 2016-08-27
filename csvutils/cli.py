@@ -3,16 +3,19 @@
 #
 
 from __future__ import absolute_import
-from . import csvutils, helpers, parsers
+from . import csvutils, parsers
+from .guts import helpers
 import argparse
 import csv
 import pkg_resources
 import sys
 
 
-def _default_arguments():
+def _default_arguments(infiles='?'):
     """
     Returns ArgumentParser with args used in all utils
+    :option infiles:            Specify the amount of infiles to expect.
+                                Defaults to '?'
     :return ArgumentParser:     ArgumentParser object
     """
     parser = argparse.ArgumentParser(add_help=False)
@@ -154,6 +157,31 @@ def csvkeep():
     informat.designation = 'outparser'
     informat.parse_args(remainder)
     informat.write(informat.file)
+
+def csvsql():
+    """
+    Command line utility to load csv files into tables in a database
+    """
+    parser = _default_arguments(infiles='*')
+    parser.add_argument('-c', '--command')
+    parser.add_argument('-n', '--database-name',
+        nargs='?',
+        default=':memory:')
+
+    args = parser.parse_args()
+    query = args.command
+
+    conn = csvutils.sql(args.infile, args.database_name,
+        head=args.header,
+        delimiter=args.delim.decode('string-escape'))
+
+    cur = conn.cursor()
+    cur.execute(query)
+
+    header = [x[0] for x in cur.description]
+    rows = cur.fetchall()
+
+    helpers.writecsv(args.outfile, header, rows)
 
 def csvsum():
     """

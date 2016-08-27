@@ -69,6 +69,17 @@ def indexes(haystack, needles):
 
     return indexes
 
+def quote(value):
+    """
+    Return a quoted string if the value is str
+    """
+    if isinstance(value, str):
+        res = "'" + value + "'"
+    else:
+        res = value
+
+    return res
+
 def tofloat(value):
     """
     Convert a value to a float.  Return 0 for any failures.
