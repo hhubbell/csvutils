@@ -47,14 +47,12 @@ def csvavg():
         action='store_true')
 
     args = parser.parse_args()
-
-    delim = args.delim.decode('string-escape')
-    seper = args.outfile_delim.decode('string-escape')
+    seper = args.outfile_delim
 
     cols, avgs = zip(*csvutils.col_apply(args.infile, helpers.avg,
         columns=args.cols,
         head=args.header,
-        delimiter=delim))
+        delimiter=args.delim))
 
     if args.precision:
         avgs = ['{:.{}f}'.format(x, args.precision) for x in avgs]
@@ -86,12 +84,10 @@ def csvdrop():
 
     args = parser.parse_args()
 
-    delim = args.delim.decode('string-escape')
-
     helpers.writecsv(args.outfile, *csvutils.drop(args.infile,
         columns=args.cols,
         head=args.header,
-        delimiter=delim))
+        delimiter=args.delim))
 
 def csvkeep():
     """
@@ -102,12 +98,10 @@ def csvkeep():
 
     args = parser.parse_args()
 
-    delim = args.delim.decode('string-escape')
-
     helpers.writecsv(args.outfile, *csvutils.keep(args.infile,
         columns=args.cols,
         head=args.header,
-        delimiter=delim))
+        delimiter=args.delim))
 
 def csvsum():
     """
@@ -127,13 +121,12 @@ def csvsum():
 
     args = parser.parse_args()
 
-    delim = args.delim.decode('string-escape')
-    seper = args.outfile_delim.decode('string-escape')
+    seper = args.outfile_delim
 
     cols, sums = zip(*csvutils.col_apply(args.infile, sum,
         columns=args.cols,
         head=args.header,
-        delimiter=delim))
+        delimiter=args.delim))
 
     if args.precision:
         sums = ['{:.{}f}'.format(x, args.precision) for x in sums]
@@ -170,12 +163,10 @@ def csvtab():
 
     args = parser.parse_args()
 
-    delim = args.delim.decode('string-escape')
-
     helpers.write(args.outfile, csvutils.tabulate(args.infile,
         maxw=args.maxlength,
         pad=args.padding,
-        delimiter=delim))
+        delimiter=args.delim))
 
 def csvtohtml():
     """
@@ -191,14 +182,11 @@ def csvtohtml():
 
     args = parser.parse_args()
 
-    infile = args.infile
-    delim = args.delim.decode('string-escape')
-
     helpers.write(args.outfile, csvutils.html(args.infile,
         pretty=args.pretty,
         head=args.header,
         display_header=args.display_header,
-        delimiter=delim))
+        delimiter=args.delim))
 
 def csvtojson():
     """
@@ -210,13 +198,11 @@ def csvtojson():
         help='Try to make the json human readable')
 
     args = parser.parse_args()
-
-    delim = args.delim.decode('string-escape')
     tabs = helpers.TAB_WIDTH if args.pretty else None
 
     json.dump(csvutils.json(args.infile,
             head=args.header,
-            delimiter=delim),
+            delimiter=args.delim),
         args.outfile,
         indent=tabs,
         sort_keys=True)
