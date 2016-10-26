@@ -136,4 +136,4 @@ def tabulate(file_obj, maxw=None, pad=0, delimiter=','):
         cmax = maxw if maxw is not None and maxw < cmax else cmax
         fmtcol.append([fmt(helpers.trunc(x, cmax), cmax, calign) for x in vals])
 
-    return '\n'.join(' '.join(x) for x in zip(*fmtcol))
+    return (' '.join(x) for x in zip(*fmtcol))

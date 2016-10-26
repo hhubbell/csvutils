@@ -163,10 +163,13 @@ def csvtab():
 
     args = parser.parse_args()
 
-    helpers.write(args.outfile, csvutils.tabulate(args.infile,
+    tgen = csvutils.tabulate(args.infile,
         maxw=args.maxlength,
         pad=args.padding,
-        delimiter=args.delim))
+        delimiter=args.delim)
+
+    for row in tgen: 
+        helpers.write(args.outfile, row)
 
 def csvtohtml():
     """
