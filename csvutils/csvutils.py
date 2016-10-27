@@ -6,9 +6,9 @@ from __future__ import absolute_import
 from . import helpers
 
 
-def col_apply(file_obj, func, columns=None, head=True, delimiter=','):
+def fmap(file_obj, func, columns=None, head=True, delimiter=','):
     """
-    Apply a function on given csv columns
+    Apply a function across columns in a csv file
     :param file_obj:    Open csv file handle
     :param func:        Function to apply
     :option columns:    CSV header columns to average, default all
@@ -136,4 +136,4 @@ def tabulate(file_obj, maxw=None, pad=0, delimiter=','):
         cmax = maxw if maxw is not None and maxw < cmax else cmax
         fmtcol.append([fmt(helpers.trunc(x, cmax), cmax, calign) for x in vals])
 
-    return '\n'.join(' '.join(x) for x in zip(*fmtcol))
+    return (' '.join(x) for x in zip(*fmtcol))

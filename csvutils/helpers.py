@@ -7,6 +7,7 @@
 
 from __future__ import division
 import csv
+import decimal
 
 
 KEY_VALUE_STR_FORMAT = '{:<{}}{:>{}}'
@@ -117,9 +118,9 @@ def tofloat(value):
     :return float:      Converted value
     """
     try:
-        number = float(value)
-    except ValueError:
-        number = 0.0
+        number = decimal.Decimal(value)
+    except decimal.InvalidOperation:
+        number = decimal.Decimal(0)
 
     return number
 

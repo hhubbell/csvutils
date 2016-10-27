@@ -102,7 +102,7 @@ $ mysql < sales.sql | csvtohtml -d "\t" | pandoc -s -H company_style.css | bcat 
 `csvutils` is also a Python library.  All command line functions can be used in a python script.  For instance:
 ```python
 >>> with open('my_csv.csv', 'r') as f:
-...     csvutils.col_apply(f, sum, columns=['Salary'])
+...     csvutils.fmap(f, sum, columns=['Salary'])
 ...
 
 [('Salary', 1004567)]
