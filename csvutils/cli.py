@@ -173,7 +173,7 @@ def csvsql():
 
     conn = csvutils.sql(args.infile, args.database_name,
         head=args.header,
-        delimiter=args.delim.decode('string-escape'))
+        delimiter=args.delim)
 
     cur = conn.cursor()
     cur.execute(query)

@@ -45,7 +45,7 @@ class SQLiteREPL(object):
             try:
                 cursor.execute(command)
                 result = cursor.fetchall()
-            except sqlite3.OperationalError, err:
+            except sqlite3.OperationalError as err:
                 result = err
 
             print(result)
