@@ -4,16 +4,16 @@ from __future__ import absolute_import
 from .base import Parser
 
 
-class html(Parser):
+class HTMLParser(Parser):
     TEMPLATE = '<table>\n{}{}\n</table>\n'
     TAB_WIDTH = 4
 
     def __init__(self, *args, **kwargs):
-        super(self, html).__init__(*args, **kwargs)
+        super(HTMLParser, self).__init__(*args, **kwargs)
 
-        self.pretty = self.TAB_WIDTH if kwargs.get('pretty') else None
+        self.pretty = kwargs.get('pretty', False)
 
-    def htmlrow(row, header=False, tabs=False):
+    def htmlrow(self, row, header=False, tabs=False):
         """
         Format one row of data
         :param row:         Row to format
@@ -22,7 +22,7 @@ class html(Parser):
                             will be TAB_WIDTH
         :return str:        Table row
         """
-        tabf = ' ' * self.TAB_WIDTH if tabs is not False else ''
+        tabf = ' ' * self.TAB_WIDTH if tabs is True else ''
         newl = '\n' if tabs is True else ''
         joiner = '{}{}'.format(newl, tabf * 2)
 
@@ -36,7 +36,7 @@ class html(Parser):
     def write(self, fileobj):
         """
         """
-        h = self.htmlrow(header, header=True, tabs=pretty) + '\n' if header else ''
-        r = (self.htmlrow(x, tabs=self.pretty) for x in rows)
+        h = self.htmlrow(self.header, header=True, tabs=self.pretty) + '\n' if self.header else ''
+        r = (self.htmlrow(x, tabs=self.pretty) for x in self.rows)
 
         fileobj.write(self.TEMPLATE.format(h, '\n'.join(r)))

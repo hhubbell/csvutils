@@ -5,12 +5,12 @@ from .base import Parser
 import csv
 
 
-class csv(Parser):
+class CSVParser(Parser):
 
     def __init__(self, *args, **kwargs):
         """
         """
-        super(self, csv).__init__(*args, **kwargs)
+        super(CSVParser, self).__init__(*args, **kwargs)
 
         self.delimiter = kwargs.get('delimiter', ',')
         self.hasheader = kwargs.get('hasheader', True)
