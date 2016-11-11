@@ -4,9 +4,11 @@ class Parser(object):
     """
     Base Parser class. Define the the required methods.
     """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.header = None
         self.rows = None
+
+        self.pretty = None
 
     def _generic_header(self, columns, prefix='col'):
         """

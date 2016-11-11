@@ -7,7 +7,15 @@ import csv
 
 class csv(Parser):
 
-    def read(self, fileobj, header=True, delimiter=','):
+    def __init__(self, *args, **kwargs):
+        """
+        """
+        super(self, csv).__init__(*args, **kwargs)
+
+        self.delimiter = kwargs.get('delimiter', ',')
+        self.hasheader = kwargs.get('hasheader', True)
+
+    def read(self, fileobj):
         """
         Open a csv file and read it.
         :param fileobj:     Open file object
@@ -15,8 +23,8 @@ class csv(Parser):
         :option delimiter:  Column delimiter
         :return tuple:      header, rows tuple
         """
-        reader = csv.reader(fileobj, delimiter=delimiter)
-        head = next(reader) if header is True else None
+        reader = csv.reader(fileobj, delimiter=self.delimiter)
+        head = next(reader) if self.hasheader is True else None
         rows = list(reader)
     
         if head is None:
@@ -27,17 +35,15 @@ class csv(Parser):
 
         return head, rows
 
-    def write(self, fileobj, header=True, delimiter=','):
+    def write(self, fileobj):
         """
         Dump a csv to file object
         :param fileobj:     File object to write to
-        :option header:     Write the header row
-        :option delimiter:  Column delimiter
         """
         try:
-            writer = csv.writer(fileobj, delimiter=delimiter, lineterminator='\n')
+            writer = csv.writer(fileobj, delimiter=self.delimiter, lineterminator='\n')
             
-            if header is True:
+            if self.header is not None:
                 writer.writerow(self.header)
 
             writer.writerows(self.rows)
