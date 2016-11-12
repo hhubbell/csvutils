@@ -5,7 +5,7 @@
 from __future__ import absolute_import
 from . import csvutils, helpers, parsers
 import argparse
-import json
+import csv
 import sys
 
 def _default_arguments():
@@ -209,7 +209,7 @@ def csvtab():
     informat = getattr(parsers, args.informat)(
         delimiter=args.delim,
         hasheader=args.header)
-    outformat = parsers.csv(delimiter=' ')
+    outformat = parsers.table()
 
     outformat.rows = csvutils.tabulate(args.infile,
         parser=informat,

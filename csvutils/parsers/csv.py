@@ -14,6 +14,8 @@ class CSVParser(Parser):
 
         self.delimiter = kwargs.get('delimiter', ',')
         self.hasheader = kwargs.get('hasheader', True)
+        self.lineterminator = kwargs.get('lineterminator', '\n')
+        self.quoting = kwargs.get('quoting', csv.QUOTE_MINIMAL)
 
     def read(self, fileobj):
         """
@@ -41,7 +43,10 @@ class CSVParser(Parser):
         :param fileobj:     File object to write to
         """
         try:
-            writer = csv.writer(fileobj, delimiter=self.delimiter, lineterminator='\n')
+            writer = csv.writer(fileobj,
+                delimiter=self.delimiter,
+                lineterminator=self.lineterminator,
+                quoting=self.quoting)
             
             if self.header is not None:
                 writer.writerow(self.header)
