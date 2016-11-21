@@ -19,21 +19,19 @@ def convert(fileobj, informat, outformat):
 
     return outformat
 
-def fmap(file_obj, func, columns=None, head=True, delimiter=','):
+def fmap(fileobj, func, parser=None, columns=None):
     """
     Apply a function across columns in a csv file
     :param file_obj:    Open csv file handle
     :param func:        Function to apply
+    :option parser:     File parser, will default to standard CSV
     :option columns:    CSV header columns to average, default all
-    :option head:       Boolean if csv has header row
-    :option delimiter:  Column delimiter
     :return list:       List of column: result tuples
     """
     columns = columns if columns is not None else []
-    header, rows = helpers.read(file_obj, header=head, delimiter=delimiter)
+    parser = parser if parser is not None else parsers.csv()
 
-    if header is None:
-        header = helpers.generic_header(len(rows[0]))
+    header, rows = parser.read(fileobj)
 
     to_app = helpers.indexes(header, columns)
     res = []

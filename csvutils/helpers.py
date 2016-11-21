@@ -69,19 +69,6 @@ def indexes(haystack, needles):
 
     return indexes
 
-def read(src, header=True, delimiter=','):
-    """
-    Open a csv file and read it.
-    :param src:         File path
-    :option header:     Use first row in csv file as header row
-    :option delimiter:  Column delimiter
-    :return tuple:      header, rows tuple
-    """
-    reader = csv.reader(src, delimiter=delimiter)
-    head = next(reader) if header is True else None
-
-    return head, list(reader)
-
 def tofloat(value):
     """
     Convert a value to a float.  Return 0 for any failures.
@@ -105,29 +92,3 @@ def trunc(string, width, replace='...'):
     :return string:     New truncated string
     """
     return string[:width - len(replace)] + replace if len(string) > width else string
-
-def write(fileobj, string, newline='\n'):
-    """
-    Dump a string to a file object
-    :param fileobj:     File object to write to
-    :param string:      String to write
-    :option newline:    Line ending
-    """
-    try:
-        fileobj.write(string + newline)
-    except IOError:
-        fileobj.close()
-
-def writecsv(fileobj, header, rows):
-    """
-    Dump a csv to file object
-    :param fileobj:     File object to write to
-    :param header:      csv header
-    :param rows:        csv rows
-    """
-    try:
-        writer = csv.writer(fileobj, lineterminator='\n')
-        writer.writerow(header)
-        writer.writerows(rows)
-    except IOError:
-        fileobj.close()
