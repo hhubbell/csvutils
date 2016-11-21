@@ -37,15 +37,6 @@ def avg(values):
     values = list(values)
     return sum(values) / len(values)
 
-def generic_header(columns):
-    """
-    Generate a list of generic header columns to use
-    if the csv file does not have a header.
-    :param columns:     Number of columns to generate
-    :return list:       Generic column list
-    """
-    return ['col{}'.format(x) for x in range(columns)]
-
 def ikeep(vals, indexes):
     """
     Inverse of imask
@@ -77,26 +68,6 @@ def indexes(haystack, needles):
         indexes = range(len(haystack))
 
     return indexes
-
-def makehtmlrow(row, header=False, tabs=False):
-    """
-    Format one row of data
-    :param row:         Row to format
-    :option header:     Header row flag
-    :option tabs:       Make html human readable by using \n and \t. Tabs
-                        will be TAB_WIDTH
-    :return str:        Table row
-    """
-    tabf = ' ' * TAB_WIDTH if tabs is True else ''
-    newl = '\n' if tabs is True else ''
-    joiner = '{}{}'.format(newl, tabf * 2)
-
-    col = '<td>{}</td>' if header is False else '<th>{}</th>'
-    return '{t}<tr>{j}{col}{n}{t}</tr>'.format(
-        col=joiner.join(col.format(x) for x in row),
-        j=joiner,
-        n=newl,
-        t=tabf)
 
 def read(src, header=True, delimiter=','):
     """

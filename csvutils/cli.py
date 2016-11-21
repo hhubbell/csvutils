@@ -3,9 +3,9 @@
 #
 
 from __future__ import absolute_import
-from . import csvutils, helpers
+from . import csvutils, helpers, parsers
 import argparse
-import json
+import csv
 import sys
 
 def _default_arguments():
@@ -20,6 +20,10 @@ def _default_arguments():
     parser.add_argument('-d', '--delim',
         nargs='?',
         default=',')
+    parser.add_argument('-f', '--from',
+        dest='informat',
+        nargs='?',
+        default='csv')
     parser.add_argument('-N', '--no-header',
         action='store_false',
         dest='header')
@@ -75,19 +79,52 @@ def csvavg():
 
         helpers.write(args.outfile, line)
 
+def csvconvert():
+    """
+    Command line utility to convert one tabular format to another
+    """
+    parser = _default_arguments()
+    parser.add_argument('-D', '--outfile-delim',
+        nargs='?',
+        default=',')
+    parser.add_argument('-p', '--pretty',
+        action='store_true')
+    parser.add_argument('-t', '--to',
+        dest='outformat',
+        nargs='?',
+        default='csv')
+
+    args = parser.parse_args()
+
+    informat = getattr(parsers, args.informat)(
+        delimiter=args.delim,
+        hasheader=args.header)
+    outformat = getattr(parsers, args.outformat)(
+        delimiter=args.outfile_delim,
+        pretty=args.pretty)
+
+    csvutils.convert(args.infile, informat, outformat).write(args.outfile)
+
 def csvdrop():
     """
-    Command line utiltiy to drop columns from a csv file
+    Command line utility to drop columns from a csv file
     """
     parser = _default_arguments()
     parser.add_argument('cols', nargs='+')
 
     args = parser.parse_args()
 
-    helpers.writecsv(args.outfile, *csvutils.drop(args.infile,
-        columns=args.cols,
-        head=args.header,
-        delimiter=args.delim))
+    informat = getattr(parsers, args.informat)(
+        delimiter=args.delim,
+        hasheader=args.header)
+
+    header, rows = csvutils.drop(args.infile,
+        parser=informat,
+        columns=args.cols)
+
+    informat.header = header
+    informat.rows = rows
+    informat.write(args.outfile)
 
 def csvkeep():
     """
@@ -98,10 +135,17 @@ def csvkeep():
 
     args = parser.parse_args()
 
-    helpers.writecsv(args.outfile, *csvutils.keep(args.infile,
-        columns=args.cols,
-        head=args.header,
-        delimiter=args.delim))
+    informat = getattr(parsers, args.informat)(
+        delimiter=args.delim,
+        hasheader=args.header)
+
+    header, rows = csvutils.keep(args.infile,
+        parser=informat,
+        columns=args.cols)
+
+    informat.header = header
+    informat.rows = rows
+    informat.write(args.outfile)
 
 def csvsum():
     """
@@ -162,49 +206,14 @@ def csvtab():
 
     args = parser.parse_args()
 
-    tgen = csvutils.tabulate(args.infile,
+    informat = getattr(parsers, args.informat)(
+        delimiter=args.delim,
+        hasheader=args.header)
+    outformat = parsers.table()
+
+    outformat.rows = csvutils.tabulate(args.infile,
+        parser=informat,
         maxw=args.maxlength,
-        pad=args.padding,
-        delimiter=args.delim)
+        pad=args.padding)
 
-    for row in tgen: 
-        helpers.write(args.outfile, row)
-
-def csvtohtml():
-    """
-    Command line utility to transform a csv file to an HTML table
-    """
-    parser = _default_arguments()
-    parser.add_argument('-D', '--no-display-header',
-        action='store_false',
-        dest='display_header')
-    parser.add_argument('-p', '--pretty',
-        action='store_true',
-        help='Try to make the html human readable')
-
-    args = parser.parse_args()
-
-    helpers.write(args.outfile, csvutils.html(args.infile,
-        pretty=args.pretty,
-        head=args.header,
-        display_header=args.display_header,
-        delimiter=args.delim))
-
-def csvtojson():
-    """
-    Command line utility to transform a csv file into json
-    """
-    parser = _default_arguments()
-    parser.add_argument('-p', '--pretty',
-        action='store_true',
-        help='Try to make the json human readable')
-
-    args = parser.parse_args()
-    tabs = helpers.TAB_WIDTH if args.pretty else None
-
-    json.dump(csvutils.json(args.infile,
-            head=args.header,
-            delimiter=args.delim),
-        args.outfile,
-        indent=tabs,
-        sort_keys=True)
+    outformat.write(args.outfile)
