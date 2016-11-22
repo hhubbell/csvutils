@@ -42,51 +42,48 @@ def csvavg():
     parser.add_argument('cols', nargs=argparse.REMAINDER)
     parser.add_argument('-a', '--alphabetize',
         action='store_true')
-    parser.add_argument('-D', '--outfile-delim',
-        nargs='?',
-        default=': ')
+    parser.add_argument('-D', '--outfile-delim')
     parser.add_argument('-p', '--precision',
         type=int)
-    parser.add_argument('-t', '--tabulate',
+    parser.add_argument('-t', '--to',
+        dest='outformat',
+        nargs='?',
+        default='csv')
+    parser.add_argument('-T', '--transpose',
         action='store_true')
 
     args = parser.parse_args()
-    seper = args.outfile_delim
+
+    informat = getattr(parsers, args.informat)(
+        delimiter=args.delim,
+        hasheader=args.header)
+    outformat = getattr(parsers, args.outformat)(
+        delimiter=args.outfile_delim)
 
     cols, avgs = zip(*csvutils.fmap(args.infile, helpers.avg,
-        columns=args.cols,
-        head=args.header,
-        delimiter=args.delim))
+        parser=informat,
+        columns=args.cols))
 
     if args.precision:
         avgs = ['{:.{}f}'.format(x, args.precision) for x in avgs]
 
-    if args.tabulate is True:
-        hwidth = max(len(x) for x in cols) + len(seper)
-        rwidth = max(len(str(x)) for x in avgs)
+    if args.transpose is True:
+        if args.alphabetize is True:
+            outformat.rows = sorted(zip(cols, avgs), key=lambda x: x[0])
+        else:
+            outformat.rows = zip(cols, avgs)
     else:
-        hwidth = ''
-        rwidth = ''
+        outformat.header = cols
+        outformat.rows = avgs
 
-    if args.alphabetize is True:
-        zipped = sorted(zip(cols, avgs), key=lambda x: args.header[x[0]])
-    else:
-        zipped = zip(cols, avgs)
-
-    for column, value in zipped:
-        key = column + seper
-        line = helpers.KEY_VALUE_STR_FORMAT.format(key, hwidth, value, rwidth)
-
-        helpers.write(args.outfile, line)
+    outformat.write(args.outfile)
 
 def csvconvert():
     """
     Command line utility to convert one tabular format to another
     """
     parser = _default_arguments()
-    parser.add_argument('-D', '--outfile-delim',
-        nargs='?',
-        default=',')
+    parser.add_argument('-D', '--outfile-delim')
     parser.add_argument('-p', '--pretty',
         action='store_true')
     parser.add_argument('-t', '--to',
@@ -155,42 +152,41 @@ def csvsum():
     parser.add_argument('cols', nargs=argparse.REMAINDER)
     parser.add_argument('-a', '--alphabetize',
         action='store_true')
-    parser.add_argument('-D', '--outfile-delim',
-        nargs='?',
-        default=': ')
+    parser.add_argument('-D', '--outfile-delim')
     parser.add_argument('-p', '--precision',
         type=int)
-    parser.add_argument('-t', '--tabulate',
+    parser.add_argument('-t', '--to',
+        dest='outformat',
+        nargs='?',
+        default='csv')
+    parser.add_argument('-T', '--transpose',
         action='store_true')
 
     args = parser.parse_args()
-    seper = args.outfile_delim
+
+    informat = getattr(parsers, args.informat)(
+        delimiter=args.delim,
+        hasheader=args.header)
+    outformat = getattr(parsers, args.outformat)(
+        delimiter=args.outfile_delim)
 
     cols, sums = zip(*csvutils.fmap(args.infile, sum,
-        columns=args.cols,
-        head=args.header,
-        delimiter=args.delim))
+        parser=informat,
+        columns=args.cols))
 
     if args.precision:
         sums = ['{:.{}f}'.format(x, args.precision) for x in sums]
 
-    if args.tabulate is True:
-        hwidth = max(len(x) for x in cols) + len(seper)
-        rwidth = max(len(str(x)) for x in sums)
+    if args.transpose is True:
+        if args.alphabetize is True:
+            outformat.rows = sorted(zip(cols, sums), key=lambda x: x[0])
+        else:
+            outformat.rows = zip(cols, sums)
     else:
-        hwidth = ''
-        rwidth = ''
+        outformat.header = cols
+        outformat.rows = avgs
 
-    if args.alphabetize is True:
-        zipped = sorted(zip(cols, sums), key=lambda x: args.header[x[0]])
-    else:
-        zipped = zip(cols, sums)
-
-    for column, value in zipped:
-        key = column + seper
-        line = helpers.KEY_VALUE_STR_FORMAT.format(key, hwidth, value, rwidth)
-
-        helpers.write(args.outfile, line)
+    outformat.write(args.outfile)
 
 def csvtab():
     """

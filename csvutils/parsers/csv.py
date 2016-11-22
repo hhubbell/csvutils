@@ -12,7 +12,7 @@ class CSVParser(Parser):
         """
         super(CSVParser, self).__init__(*args, **kwargs)
 
-        self.delimiter = kwargs.get('delimiter', ',')
+        self.delimiter = kwargs.get('delimiter', ',') or ','
         self.hasheader = kwargs.get('hasheader', True)
         self.lineterminator = kwargs.get('lineterminator', '\n')
         self.quoting = kwargs.get('quoting', csv.QUOTE_MINIMAL)

@@ -7,7 +7,7 @@ class TableParser(Parser):
     def __init__(self, *args, **kwargs):
         super(TableParser, self).__init__(*args, **kwargs)
 
-        self.delimiter = kwargs.get('delimiter', ' ')
+        self.delimiter = kwargs.get('delimiter', ' ') or ' '
         self.lineterminator = kwargs.get('lineterminator', '\n')
 
     def write(self, fileobj):
