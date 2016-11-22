@@ -4,7 +4,7 @@ import re
 
 def get_version():
     with open(os.path.join('csvutils', '__init__.py'), 'r') as f:
-        return re.search('^__version__ = (.*)$', f.read(), re.M).group(1)
+        return re.search('^__version__ = \'(.*)\'$', f.read(), re.M).group(1)
 
 setup(
     name='csvutils',
