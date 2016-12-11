@@ -8,8 +8,6 @@ class Parser(object):
         self.header = None
         self.rows = None
 
-        self.pretty = None
-
     def _generic_header(self, columns, prefix='col'):
         """
         Generate a list of generic header columns if the file

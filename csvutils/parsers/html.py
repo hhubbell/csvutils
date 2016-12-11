@@ -9,18 +9,21 @@ class HTMLParser(Parser):
     TAB_WIDTH = 4
 
     def __init__(self, *args, **kwargs):
+        """
+        :option pretty [bool]: Make HTML human-readable
+        """
         super(HTMLParser, self).__init__(*args, **kwargs)
 
         self.pretty = kwargs.get('pretty', False)
 
-    def htmlrow(self, row, header=False, tabs=False):
+    def _htmlrow(self, row, header=False, tabs=False):
         """
         Format one row of data
-        :param row:         Row to format
-        :option header:     Header row flag
-        :option tabs:       Make html human readable by using \n and \t. Tabs
-                            will be TAB_WIDTH
-        :return str:        Table row
+        :param row [iter]: Row to format
+        :option header [bool]: Header row flag
+        :option tabs [bool]: Make html human-readable by using \n and \t.
+            Tabs will be TAB_WIDTH
+        :return [str]: Table row
         """
         tabf = ' ' * self.TAB_WIDTH if tabs is True else ''
         newl = '\n' if tabs is True else ''
@@ -35,8 +38,10 @@ class HTMLParser(Parser):
 
     def write(self, fileobj):
         """
+        Dump a html table to an open file handle
+        :param fileobj [File]: File object to write to
         """
-        h = self.htmlrow(self.header, header=True, tabs=self.pretty) + '\n' if self.header else ''
-        r = (self.htmlrow(x, tabs=self.pretty) for x in self.rows)
+        h = self._htmlrow(self.header, header=True, tabs=self.pretty) + '\n' if self.header else ''
+        r = (self._htmlrow(x, tabs=self.pretty) for x in self.rows)
 
         fileobj.write(self.TEMPLATE.format(h, '\n'.join(r)))

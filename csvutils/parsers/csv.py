@@ -9,6 +9,10 @@ class CSVParser(Parser):
 
     def __init__(self, *args, **kwargs):
         """
+        :option delimiter [str]: Column delimiter
+        :option hasheader [bool]: Use first row in csv file as header row
+        :option lineterminator [str]: Row delimiter
+        :option quoting [int]: Quoting level
         """
         super(CSVParser, self).__init__(*args, **kwargs)
 
@@ -20,10 +24,8 @@ class CSVParser(Parser):
     def read(self, fileobj):
         """
         Open a csv file and read it.
-        :param fileobj:     Open file object
-        :option header:     Use first row in csv file as header row
-        :option delimiter:  Column delimiter
-        :return tuple:      header, rows tuple
+        :param fileobj [File]: Open file object
+        :return [tuple]: header, rows tuple
         """
         reader = csv.reader(fileobj, delimiter=self.delimiter)
         head = next(reader) if self.hasheader is True else None
@@ -39,8 +41,8 @@ class CSVParser(Parser):
 
     def write(self, fileobj):
         """
-        Dump a csv to file object
-        :param fileobj:     File object to write to
+        Dump a csv to an open file handle
+        :param fileobj [File]: File object to write to
         """
         try:
             writer = csv.writer(fileobj,

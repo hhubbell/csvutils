@@ -5,6 +5,10 @@ from .base import Parser
 class TableParser(Parser):
 
     def __init__(self, *args, **kwargs):
+        """
+        :option delimiter [str]: Column delimiter
+        :option lineterminator [str]: Row delimiter
+        """
         super(TableParser, self).__init__(*args, **kwargs)
 
         self.delimiter = kwargs.get('delimiter', ' ') or ' '
@@ -12,8 +16,8 @@ class TableParser(Parser):
 
     def write(self, fileobj):
         """
-        Dump an iterable to file object
-        :param fileobj:     File object to write to
+        Dump table to an open file handle
+        :param fileobj [File]: File object to write to
         """
         try:
             if self.header is not None:
