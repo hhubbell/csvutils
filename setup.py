@@ -12,7 +12,7 @@ setup(
     description='A group of utilities for exploring and manipulating csv files.',
     author='Harry Hubbell',
     url='https://github.com/hhubbell/csvutils',
-    packages=['csvutils', 'csvutils.parsers'],
+    packages=['csvutils', 'csvutils.parsers', 'csvutils.parsers.builtins'],
     entry_points={
         'console_scripts': [
             'csvavg=csvutils.cli:csvavg',
@@ -20,4 +20,9 @@ setup(
             'csvdrop=csvutils.cli:csvdrop',
             'csvkeep=csvutils.cli:csvkeep',
             'csvsum=csvutils.cli:csvsum',
-            'csvtab=csvutils.cli:csvtab']})
+            'csvtab=csvutils.cli:csvtab'],
+        'csvutils.parsers': [
+            'csv=csvutils.parsers.builtins.csv:CSVParser',
+            'html=csvutils.parsers.builtins.html:HTMLParser',
+            'json=csvutils.parsers.builtins.json:JSONParser',
+            'table=csvutils.parsers.builtins.table:TableParser']})

@@ -1,7 +1,7 @@
 
 
 from __future__ import absolute_import
-from .base import Parser
+from ..base import Parser
 import csv
 
 

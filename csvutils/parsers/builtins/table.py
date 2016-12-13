@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from .base import Parser
+from ..base import Parser
 
 
 class TableParser(Parser):
