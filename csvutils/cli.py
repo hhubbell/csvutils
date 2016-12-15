@@ -19,10 +19,12 @@ def _default_arguments():
     parser.add_argument('-f', '--from',
         dest='informat',
         nargs='?',
-        default='csv')
+        default='csv',
+        help='Input file type. Default CSV.')
     parser.add_argument('-v', '--version',
         action='version',
-        version=pkg_resources.get_distribution(__package__).version)
+        version=pkg_resources.get_distribution(__package__).version,
+        help='Print version number and quit')
     # XXX Allow global no-header? (sets both infile and outfile)
     # parser.add_argument('-N', '--no-header',
     #    action='store_false',
