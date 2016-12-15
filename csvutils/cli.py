@@ -6,7 +6,9 @@ from __future__ import absolute_import
 from . import csvutils, helpers, parsers
 import argparse
 import csv
+import pkg_resources
 import sys
+
 
 def _default_arguments():
     """
@@ -31,6 +33,9 @@ def _default_arguments():
         nargs='?',
         type=argparse.FileType('w'),
         default=sys.stdout)
+    parser.add_argument('-v', '--version',
+        action='version',
+        version=pkg_resources.get_distribution(__package__).version)
 
     return parser
 
