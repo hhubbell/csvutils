@@ -4,17 +4,7 @@
 
 
 from __future__ import print_function
-from .helpers import quote
 import sqlite3
-
-
-def create_schema(table, header):
-    return 'CREATE TABLE {} ({})'.format(table, ', '.join(header))
-
-def create_insert(table, header, rows):
-    return  'INSERT INTO {} ({}) VALUES {}'.format(table,
-        ', '.join(header),
-        ', '.join('({})'.format(', '.join(quote(y) for y in x)) for x in rows))
 
 
 class SQLiteREPL(object):

@@ -26,4 +26,5 @@ setup(
             'csv=csvutils.parsers.builtins.csv:CSVParser',
             'html=csvutils.parsers.builtins.html:HTMLParser',
             'json=csvutils.parsers.builtins.json:JSONParser',
+            'sqlite=csvutils.parsers.builtins.sqlite3:SQLite3Parser',
             'table=csvutils.parsers.builtins.table:TableParser']})
