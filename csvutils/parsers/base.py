@@ -13,12 +13,11 @@ class Parser(object):
     READ_MODE = 'r'
     WRITE_MODE = 'w'
 
-    def __init__(self, designation, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.header = None
         self.rows = None
-        self.designation = designation
+        self.designation = kwargs.get('designation')
         self._set_argparser_options()
-        self._parse_args(kwargs.get('parser_options', []))
 
     def _generic_header(self, columns, prefix='col'):
         """
@@ -30,17 +29,6 @@ class Parser(object):
         """
         return ['{}{}'.format(prefix, x) for x in range(columns)]
 
-    def _parse_args(self, options):
-        """
-        Parse options with the argument parser.  All parsed options will
-        be available as attributes of the parser object.
-        :param options [list]: Arguments to parse.
-        """
-        args = getattr(self, '_' + self.designation).parse_args(options)
-
-        for key, value in vars(args).items():
-            setattr(self, key, value)
-
     def _set_argparser_options(self):
         """
         Creates an ArgumentParser with the parser's allowed arguments.
@@ -48,13 +36,31 @@ class Parser(object):
         self._inparser = argparse.ArgumentParser()
         self._outparser = argparse.ArgumentParser()
 
-        self._inparser.add_argument('infile', nargs='?',
+        self._inparser.add_argument('file', nargs='?',
             type=argparse.FileType(self.READ_MODE),
             default=sys.stdin)
 
         self._outparser.add_argument('-o', '--outfile', nargs='?',
             type=argparse.FileType(self.WRITE_MODE),
-            default=sys.stdout)
+            default=sys.stdout,
+            dest='file')
+
+    def parse_args(self, options):
+        """
+        Parse options with the argument parser.  All parsed options will
+        be available as attributes of the parser object.
+        :param options [list]: Arguments to parse.
+        """
+        try:
+            parser = '_' + self.designation
+            args, remainder = getattr(self, parser).parse_known_args(options)
+
+            for key, value in vars(args).items():
+                setattr(self, key, value)
+
+        except AttributeError:
+            # FIXME Throw a csvutils specific exception
+            sys.stderr.write('ERROR: Parser had no designation')
 
     def read(self, *args, **kwargs):
         raise NotImplementedError

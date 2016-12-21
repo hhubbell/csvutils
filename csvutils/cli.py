@@ -47,15 +47,15 @@ def csvavg():
     parser.add_argument('-T', '--transpose',
         action='store_true')
 
-    args = parser.parse_args()
+    args, remainder = parser.parse_known_args()
 
-    informat = getattr(parsers, args.informat)(
-        delimiter=args.delim,
-        hasheader=args.header)
-    outformat = getattr(parsers, args.outformat)(
-        delimiter=args.outfile_delim)
+    informat = getattr(parsers, args.informat)(designation='inparser')
+    outformat = getattr(parsers, args.outformat)(designation='outparser')
 
-    cols, avgs = zip(*csvutils.fmap(args.infile, helpers.avg,
+    informat.parse_args(remainder)
+    outformat.parse_args(remainder)
+
+    cols, avgs = zip(*csvutils.fmap(informat.file, helpers.avg,
         parser=informat,
         columns=args.cols))
 
@@ -69,84 +69,82 @@ def csvavg():
             outformat.rows = zip(cols, avgs)
     else:
         outformat.header = cols
-        outformat.rows = avgs
+        outformat.rows = [avgs]
 
-    outformat.write(args.outfile)
+    outformat.write(outformat.file)
 
 def csvconvert():
     """
     Command line utility to convert one tabular format to another
     """
     parser = _default_arguments()
-    parser.add_argument('-p', '--pretty',
-        action='store_true')
     parser.add_argument('-t', '--to',
         dest='outformat',
         nargs='?',
         default='csv')
 
-    args = parser.parse_args()
+    args, remainder = parser.parse_known_args()
 
-    informat = getattr(parsers, args.informat)(
-        delimiter=args.delim,
-        hasheader=args.header)
-    outformat = getattr(parsers, args.outformat)(
-        delimiter=args.outfile_delim,
-        pretty=args.pretty)
+    informat = getattr(parsers, args.informat)(designation='inparser')
+    outformat = getattr(parsers, args.outformat)(designation='outparser')
 
-    csvutils.convert(args.infile, informat, outformat).write(args.outfile)
+    informat.parse_args(remainder)
+    outformat.parse_args(remainder)
+
+    csvutils.convert(informat.file, informat, outformat).write(outformat.file)
 
 def csvdrop():
     """
     Command line utility to drop columns from a csv file
     """
     parser = _default_arguments()
-    parser.add_argument('cols', nargs='+')
+    parser.add_argument('-c', '--cols', nargs='*')
 
-    args = parser.parse_args()
+    args, remainder = parser.parse_known_args()
 
-    informat = getattr(parsers, args.informat)(
-        delimiter=args.delim,
-        hasheader=args.header)
+    informat = getattr(parsers, args.informat)(designation='inparser')
+    informat.parse_args(remainder)
 
-    header, rows = csvutils.drop(args.infile,
+    header, rows = csvutils.drop(informat.file,
         parser=informat,
         columns=args.cols)
 
     informat.header = header
     informat.rows = rows
-    informat.write(args.outfile)
+    informat.designation = 'outparser'
+    informat.parse_args(remainder)
+    informat.write(informat.file)
 
 def csvkeep():
     """
     Command line utiltiy to keep columns in a csv file. The inverse of csvdrop
     """
     parser = _default_arguments()
-    parser.add_argument('cols', nargs='+')
+    parser.add_argument('-c', '--cols', nargs='*')
 
-    args = parser.parse_args()
+    args, remainder = parser.parse_known_args()
 
-    informat = getattr(parsers, args.informat)(
-        delimiter=args.delim,
-        hasheader=args.header)
+    informat = getattr(parsers, args.informat)(designation='inparser')
+    informat.parse_args(remainder)
 
-    header, rows = csvutils.keep(args.infile,
+    header, rows = csvutils.keep(informat.file,
         parser=informat,
         columns=args.cols)
 
     informat.header = header
     informat.rows = rows
-    informat.write(args.outfile)
+    informat.designation = 'outparser'
+    informat.parse_args(remainder)
+    informat.write(informat.file)
 
 def csvsum():
     """
     Command line utility to sum a csv file
     """
     parser = _default_arguments()
-    parser.add_argument('cols', nargs=argparse.REMAINDER)
+    parser.add_argument('-c', '--cols', nargs='*')
     parser.add_argument('-a', '--alphabetize',
         action='store_true')
-    parser.add_argument('-D', '--outfile-delim')
     parser.add_argument('-p', '--precision',
         type=int)
     parser.add_argument('-t', '--to',
@@ -156,15 +154,15 @@ def csvsum():
     parser.add_argument('-T', '--transpose',
         action='store_true')
 
-    args = parser.parse_args()
+    args, remainder = parser.parse_known_args()
 
-    informat = getattr(parsers, args.informat)(
-        delimiter=args.delim,
-        hasheader=args.header)
-    outformat = getattr(parsers, args.outformat)(
-        delimiter=args.outfile_delim)
+    informat = getattr(parsers, args.informat)(designation='inparser')
+    outformat = getattr(parsers, args.outformat)(designation='outparser')
 
-    cols, sums = zip(*csvutils.fmap(args.infile, sum,
+    informat.parse_args(remainder)
+    outformat.parse_args(remainder)
+
+    cols, sums = zip(*csvutils.fmap(informat.file, sum,
         parser=informat,
         columns=args.cols))
 
@@ -178,31 +176,27 @@ def csvsum():
             outformat.rows = zip(cols, sums)
     else:
         outformat.header = cols
-        outformat.rows = avgs
+        outformat.rows = [sums]
 
-    outformat.write(args.outfile)
+    outformat.write(outformat.file)
 
 def csvtab():
     """
     Command line utility to tabulate a csv file for easy viewing
     """
     parser = _default_arguments()
-    parser.add_argument('-m', '--maxlength',
-        type=int)
-    parser.add_argument('-p', '--padding',
-        nargs='?',
-        type=int,
-        default=0)
 
     args, remainder = parser.parse_known_args()
 
-    informat = getattr(parsers, args.informat)('inparser',
-        parser_options=remainder)
-    outformat = parsers.table('outparser')
+    informat = getattr(parsers, args.informat)(designation='inparser')
+    outformat = parsers.table()
 
-    outformat.rows = csvutils.tabulate(informat.infile,
+    informat.parse_args(remainder)
+    outformat.parse_args(remainder)
+
+    outformat.rows = csvutils.tabulate(informat.file,
         parser=informat,
-        maxw=args.maxlength,
-        pad=args.padding)
+        maxw=outformat.column_maxwidth,
+        pad=outformat.padding)
 
-    outformat.write(outformat.outfile)
+    outformat.write(outformat.file)

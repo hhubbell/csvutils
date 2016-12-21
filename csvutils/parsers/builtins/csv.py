@@ -18,14 +18,10 @@ class CSVParser(Parser):
         """
         super(CSVParser, self).__init__(*args, **kwargs)
 
-        self.delimiter = kwargs.get('delimiter',
-            getattr(self, 'delimiter', ','))
-        self.infile_hasheader = kwargs.get('hasheader',
-            getattr(self, 'hasheader', True))
-        self.infile_lineterminator = kwargs.get('lineterminator',
-            getattr(self, 'lineterminator', '\n'))
-        self.quoting = kwargs.get('quoting',
-            getattr(self, 'quoting', csv.QUOTE_MINIMAL))
+        self.delimiter = kwargs.get('delimiter', ',')
+        self.hasheader = kwargs.get('hasheader', True)
+        self.lineterminator = kwargs.get('lineterminator', '\n')
+        self.quoting = kwargs.get('quoting', csv.QUOTE_MINIMAL)
 
     def _set_argparser_options(self):
         """

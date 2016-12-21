@@ -1,4 +1,6 @@
-
+#
+# html.py
+#
 
 from __future__ import absolute_import
 from ..base import Parser
@@ -42,7 +44,7 @@ class HTMLParser(Parser):
         """
         super(HTMLParser, self)._set_argparser_options()
 
-        self._outparser.add_argument('-p', '--outfile-pretty',
+        self._outparser.add_argument('-P', '--outfile-pretty',
             action='store_true',
             dest='pretty')
 
