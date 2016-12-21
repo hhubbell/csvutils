@@ -16,26 +16,17 @@ def _default_arguments():
     :return ArgumentParser:     ArgumentParser object
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('infile', nargs='?',
-        type=argparse.FileType('r'),
-        default=sys.stdin)
-    parser.add_argument('-d', '--delim',
-        nargs='?',
-        default=',')
     parser.add_argument('-f', '--from',
         dest='informat',
         nargs='?',
         default='csv')
-    parser.add_argument('-N', '--no-header',
-        action='store_false',
-        dest='header')
-    parser.add_argument('-o', '--outfile',
-        nargs='?',
-        type=argparse.FileType('w'),
-        default=sys.stdout)
     parser.add_argument('-v', '--version',
         action='version',
         version=pkg_resources.get_distribution(__package__).version)
+    # XXX Allow global no-header? (sets both infile and outfile)
+    # parser.add_argument('-N', '--no-header',
+    #    action='store_false',
+    #    dest='header')
 
     return parser
 
@@ -44,10 +35,9 @@ def csvavg():
     Command line utility to average a csv file
     """
     parser = _default_arguments()
-    parser.add_argument('cols', nargs=argparse.REMAINDER)
+    parser.add_argument('-c', '--cols', nargs='*')
     parser.add_argument('-a', '--alphabetize',
         action='store_true')
-    parser.add_argument('-D', '--outfile-delim')
     parser.add_argument('-p', '--precision',
         type=int)
     parser.add_argument('-t', '--to',
@@ -88,7 +78,6 @@ def csvconvert():
     Command line utility to convert one tabular format to another
     """
     parser = _default_arguments()
-    parser.add_argument('-D', '--outfile-delim')
     parser.add_argument('-p', '--pretty',
         action='store_true')
     parser.add_argument('-t', '--to',
@@ -205,16 +194,15 @@ def csvtab():
         type=int,
         default=0)
 
-    args = parser.parse_args()
+    args, remainder = parser.parse_known_args()
 
-    informat = getattr(parsers, args.informat)(
-        delimiter=args.delim,
-        hasheader=args.header)
-    outformat = parsers.table()
+    informat = getattr(parsers, args.informat)('inparser',
+        parser_options=remainder)
+    outformat = parsers.table('outparser')
 
-    outformat.rows = csvutils.tabulate(args.infile,
+    outformat.rows = csvutils.tabulate(informat.infile,
         parser=informat,
         maxw=args.maxlength,
         pad=args.padding)
 
-    outformat.write(args.outfile)
+    outformat.write(outformat.outfile)

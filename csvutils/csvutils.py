@@ -90,7 +90,7 @@ def tabulate(fileobj, parser=None, maxw=None, pad=0):
     :option pad:        Cell padding
     :return list:       Formatted table in matrix like form.
     """
-    parser = parser if parser is not None else parsers.csv()
+    parser = parser if parser is not None else parsers.csv('inparser')
     header, rows = parser.read(fileobj)
 
     full = list(rows)
