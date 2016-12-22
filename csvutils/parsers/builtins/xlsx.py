@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import
 from ..base import Parser
+from ...helpers import letters
 import zipfile
 import xml.etree.ElementTree as ElementTree
 
@@ -24,8 +25,15 @@ class XLSXParser(Parser):
 
     def __init__(self, *args, **kwargs):
         """
+        :option sheet_name [str]: Target sheet
+        :option dimension [str]: Excel range notation (A1:B2)
+        :option hasheader [bool]: Use first row in table as header
         """
         super(XLSXParser, self).__init__(*args, **kwargs)
+
+        self.sheet_name = kwargs.get('sheet_name', 'Sheet1')
+        self.dimension = kwargs.get('dimension')
+        self.hasheader = kwargs.get('hasheader', True)
 
     def _parse_row(self, tree):
         """
@@ -34,17 +42,31 @@ class XLSXParser(Parser):
         :param strings [Element]: Shared string lookup
         :return [list]: Table row
         """
+        st, en = self.dimension.split(':')
+        st = ''.join(filter(str.isalpha, st))
+        en = ''.join(filter(str.isalpha, en))
+        xl_cols = letters(st, en)
+
         col = nstag(self.NS_MAIN, 'c')
         val = nstag(self.NS_MAIN, 'v')
 
         row = []
+        i = 0
         for cell in tree.iter(col):
+            # Insert blank columns if necessary.
+            xl_col =  ''.join(filter(str.isalpha, cell.attrib.get('r')))
+            while xl_col != xl_cols[i]:
+                row.append(None)
+                i += 1
+
             value = cell.find(val).text
 
             if cell.attrib.get('t'):
                 row.append(self._ss_lookup(int(value)))
             else:
                 row.append(value)
+
+            i += 1
 
         return row
 
@@ -58,10 +80,8 @@ class XLSXParser(Parser):
             nargs='?',
             default='Sheet1',
             dest='sheet_name')
-        self._inparser.add_argument('--infile-index',
-            nargs='?',
-            default='A1',
-            dest='start_index')
+        self._inparser.add_argument('--infile-dim',
+            dest='dimension')
         self._inparser.add_argument('--infile-no-header',
             action='store_false',
             dest='hasheader')
@@ -100,9 +120,11 @@ class XLSXParser(Parser):
         if tgt is None:
             raise Exception # FIXME csvutils exception
 
-        sheet = ElementTree.fromstring(archive.read(self.WORKSHEET.format(tgt)))
-        # XXX This will only work for very basic cases right now
+        sheet = ElementTree.fromstring(archive.read(self.WORKSHEET.format(tgt)))        
         table = sheet.iter(nstag(self.NS_MAIN, 'row'))
+
+        if self.dimension is None:
+            self.dimension = sheet.find(nstag(self.NS_MAIN, 'dimension')).attrib.get('ref')
 
         header = self._parse_row(next(table))
         rows = [self._parse_row(x) for x in table]
