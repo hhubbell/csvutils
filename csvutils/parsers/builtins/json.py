@@ -1,4 +1,6 @@
-
+#
+# json.py
+#
 
 from __future__ import absolute_import
 from ..base import Parser
@@ -15,13 +17,30 @@ class JSONParser(Parser):
         super(JSONParser, self).__init__(*args, **kwargs)
 
         self.pretty = kwargs.get('pretty', False)
-        self.indent = self.TAB_WIDTH if self.pretty else None
+        self.indent = kwargs.get('indent', self.TAB_WIDTH)
+
+    def _set_argparse_options(self):
+        """
+        Creates an ArgumentParser with the parser's allowed arguments.
+        """
+        super(JSONParser, self)._set_argparser_options()
+
+        self._outparser.add_argument('-P', '--outfile-pretty',
+            action='store_true',
+            dest='pretty')
+        # XXX Does not work
+        self._outparser.add_argument('-i', '--outfile-indent',
+            type=int,
+            nargs='?',
+            default=self.TAB_WIDTH,
+            dest='indent')
 
     def write(self, fileobj):
         """
         Dump a json object to an open file handle
         :param fileobj [File]: File object to write to
         """
+        indent = self.indent if self.pretty else None
         obj = [{k: v for k, v in zip(self.header, row)} for row in self.rows]
 
-        json.dump(obj, fileobj, indent=self.indent, sort_keys=self.pretty)
+        json.dump(obj, fileobj, indent=indent, sort_keys=self.pretty)

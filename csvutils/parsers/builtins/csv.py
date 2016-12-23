@@ -1,4 +1,6 @@
-
+#
+# csv.py
+#
 
 from __future__ import absolute_import
 from ..base import Parser
@@ -16,10 +18,56 @@ class CSVParser(Parser):
         """
         super(CSVParser, self).__init__(*args, **kwargs)
 
-        self.delimiter = kwargs.get('delimiter', ',') or ','
+        self.delimiter = kwargs.get('delimiter', ',')
         self.hasheader = kwargs.get('hasheader', True)
         self.lineterminator = kwargs.get('lineterminator', '\n')
         self.quoting = kwargs.get('quoting', csv.QUOTE_MINIMAL)
+
+    def _set_argparser_options(self):
+        """
+        Creates an ArgumentParser with the parser's allowed arguments.
+        """
+        super(CSVParser, self)._set_argparser_options()
+
+        self._inparser.add_argument('-d', '--infile-delim',
+            nargs='?',
+            default=',',
+            dest='delimiter')
+        self._inparser.add_argument('--infile-no-header',
+            action='store_false',
+            dest='hasheader')
+        self._inparser.add_argument('--infile-lineterminator',
+            nargs='?',
+            default='\n',
+            dest='lineterminator')
+        self._inparser.add_argument('--infile-quoting',
+            nargs='?',
+            default=csv.QUOTE_MINIMAL,
+            dest='quoting',
+            choices=[csv.QUOTE_ALL,
+                csv.QUOTE_MINIMAL,
+                csv.QUOTE_NONNUMERIC,
+                csv.QUOTE_NONE])
+
+        self._outparser.add_argument('-D', '--outfile-delim',
+            nargs='?',
+            default=',',
+            dest='delimiter')
+        self._outparser.add_argument('--outfile-no-header',
+            action='store_false',
+            dest='hasheader')
+        self._outparser.add_argument('--outfile-lineterminator',
+            nargs='?',
+            default='\n',
+            dest='lineterminator')
+        self._outparser.add_argument('--outfile-quoting',
+            nargs='?',
+            default=csv.QUOTE_MINIMAL,
+            dest='quoting',
+            choices=[csv.QUOTE_ALL,
+                csv.QUOTE_MINIMAL,
+                csv.QUOTE_NONNUMERIC,
+                csv.QUOTE_NONE])
 
     def read(self, fileobj):
         """
