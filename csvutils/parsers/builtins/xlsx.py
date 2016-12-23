@@ -120,7 +120,7 @@ class XLSXParser(Parser):
         if tgt is None:
             raise Exception # FIXME csvutils exception
 
-        sheet = ElementTree.fromstring(archive.read(self.WORKSHEET.format(tgt)))        
+        sheet = ElementTree.fromstring(archive.read(self.WORKSHEET.format(tgt)))
         table = sheet.iter(nstag(self.NS_MAIN, 'row'))
 
         if self.dimension is None:

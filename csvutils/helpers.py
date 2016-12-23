@@ -22,7 +22,7 @@ def align(values):
     :return string:     str.format microlanguage alignment character
     """
     try:
-        [float(x) for x in values]
+        [float(x) for x in values if x is not None]
         alg = '>'
     except ValueError:
         alg = '<'
@@ -87,9 +87,11 @@ def tofloat(value):
     :param value:       Value to convert
     :return float:      Converted value
     """
+    value = 0 if value is None else value
+
     try:
         number = decimal.Decimal(value)
-    except decimal.InvalidOperation:
+    except decimal.InvalidOperation, TypeError:
         number = decimal.Decimal(0)
 
     return number
@@ -103,4 +105,6 @@ def trunc(string, width, replace='...'):
     :option replace:    Replace truncated data with
     :return string:     New truncated string
     """
+    string = '' if string is None else string
+
     return string[:width - len(replace)] + replace if len(string) > width else string
