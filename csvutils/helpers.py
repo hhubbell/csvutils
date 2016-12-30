@@ -91,7 +91,7 @@ def tofloat(value):
 
     try:
         number = decimal.Decimal(value)
-    except decimal.InvalidOperation, TypeError:
+    except (decimal.InvalidOperation, TypeError):
         number = decimal.Decimal(0)
 
     return number
