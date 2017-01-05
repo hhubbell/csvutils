@@ -54,15 +54,19 @@ class XLSXParser(Parser):
         i = 0
         for cell in tree.iter(col):
             # Insert blank columns if necessary.
-            xl_col =  ''.join(filter(str.isalpha, cell.attrib.get('r')))
+            xl_col = ''.join(filter(str.isalpha, cell.attrib.get('r')))
             while xl_col != xl_cols[i]:
                 row.append(None)
                 i += 1
 
-            value = cell.find(val).text
+            if cell.find(val) is not None:
+                value = cell.find(val).text
+            else:
+                value = None
 
-            if cell.attrib.get('t'):
+            if cell.attrib.get('t') and value is not None:
                 row.append(self._ss_lookup(int(value)))
+            # XXX: Handle dates
             else:
                 row.append(value)
 

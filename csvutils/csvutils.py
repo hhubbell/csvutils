@@ -101,7 +101,8 @@ def tabulate(fileobj, parser=None, maxw=None, pad=0):
 
     for head, vals in zip(header, flat):
         calign = helpers.align(vals[1:])
-        cmax = max(len(x) for x in vals if x is not None) + pad
+        cells = [len(x) for x in vals if x is not None]
+        cmax = max(cells) + pad if cells else 0
         cmax = maxw if maxw is not None and maxw < cmax else cmax
         fmtcol.append([fmt(helpers.trunc(x, cmax), cmax, calign) for x in vals])
 
