@@ -5,6 +5,7 @@
 from __future__ import absolute_import
 from ..base import Parser
 from ...helpers import letters
+import datetime
 import zipfile
 import xml.etree.ElementTree as ElementTree
 
@@ -22,6 +23,8 @@ class XLSXParser(Parser):
     STRINGS = 'xl/sharedStrings.xml'
     WORKBOOK = 'xl/workbook.xml'
     WORKSHEET = 'xl/worksheets/sheet{}.xml'
+
+    EPOCH = datetime.date(1900, 1, 1)
 
     def __init__(self, *args, **kwargs):
         """
@@ -64,9 +67,19 @@ class XLSXParser(Parser):
             else:
                 value = None
 
-            if cell.attrib.get('t') and value is not None:
+            if value is None:
+                row.append(value)
+            elif cell.attrib.get('t'):
                 row.append(self._ss_lookup(int(value)))
-            # XXX: Handle dates
+                """
+                FIXME:
+                elif cell.attrib.get('s'):
+                    num_fmt = cell.attrib.get('s')
+
+                    delta = datetime.timedelta(days=int(value))
+                    print(delta)
+                    row.append(self.EPOCH + delta)
+                """
             else:
                 row.append(value)
 

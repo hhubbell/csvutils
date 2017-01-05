@@ -24,7 +24,7 @@ def align(values):
     try:
         [float(x) for x in values if x is not None]
         alg = '>'
-    except ValueError:
+    except (ValueError, TypeError):
         alg = '<'
 
     return alg
