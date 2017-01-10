@@ -98,7 +98,7 @@ class CSVParser(Parser):
                 lineterminator=self.lineterminator,
                 quoting=self.quoting)
             
-            if self.header is not None:
+            if self.header is not None and self.hasheader is not False:
                 writer.writerow(self.header)
 
             writer.writerows(self.rows)
