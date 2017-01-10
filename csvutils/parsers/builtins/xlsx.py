@@ -130,12 +130,14 @@ class XLSXParser(Parser):
         self._set_sharedstrings(ElementTree.fromstring(archive.read(self.STRINGS)))
 
         tgt = None
-        for sheet in workbook.iter(nstag(self.NS_MAIN, 'sheet')):
+        sheets = list(workbook.iter(nstag(self.NS_MAIN, 'sheet')))
+        for sheet in sheets:
             if sheet.attrib.get('name') == self.sheet_name:
                 tgt = sheet.attrib.get('sheetId')
 
         if tgt is None:
-            raise Exception # FIXME csvutils exception
+            raise InvalidSheetNameError(self.sheet_name, 
+                options=(x.attrib.get('name') for x in sheets))
 
         sheet = ElementTree.fromstring(archive.read(self.WORKSHEET.format(tgt)))
         table = sheet.iter(nstag(self.NS_MAIN, 'row'))
@@ -152,3 +154,15 @@ class XLSXParser(Parser):
     #def write(self, fileobj):
     #    """
     #    """
+
+
+class InvalidSheetNameError(Exception):
+    MESSAGE = "Sheet '{}' is not in workbook. Please select " \
+        "one of the following: {}"
+
+    def __init__(self, sheet, options=None):
+        self.sheet = sheet
+        self.options = ', '.join(options) if options is not None else ''
+
+    def __str__(self):
+        return self.MESSAGE.format(self.sheet, self.options)
