@@ -4,8 +4,8 @@
 
 from __future__ import absolute_import
 from ..base import Parser
-from ...helpers import letters
 import datetime
+import functools
 import zipfile
 import xml.etree.ElementTree as ElementTree
 
@@ -38,6 +38,17 @@ class XLSXParser(Parser):
         self.dimension = kwargs.get('dimension')
         self.hasheader = kwargs.get('hasheader', True)
 
+    def _col_to_num(self, column):
+        """
+        Convert an Excel column to a number.
+        :param column [str]: Excel column string
+        :return [int]: Numeric column string
+        """
+        func = lambda x, y: x * 26 + y
+        ords = (ord(c.upper()) - ord('A') + 1 for c in column)
+
+        return functools.reduce(func, ords)
+
     def _parse_row(self, tree):
         """
         Parse an XML row and return a list of values.
@@ -46,9 +57,9 @@ class XLSXParser(Parser):
         :return [list]: Table row
         """
         st, en = self.dimension.split(':')
-        st = ''.join(filter(str.isalpha, st))
-        en = ''.join(filter(str.isalpha, en))
-        xl_cols = letters(st, en)
+        st = self._col_to_num(''.join(filter(str.isalpha, st)))
+        en = self._col_to_num(''.join(filter(str.isalpha, en)))
+        table_range = range(st, en)
 
         col = nstag(self.NS_MAIN, 'c')
         val = nstag(self.NS_MAIN, 'v')
@@ -58,7 +69,9 @@ class XLSXParser(Parser):
         for cell in tree.iter(col):
             # Insert blank columns if necessary.
             xl_col = ''.join(filter(str.isalpha, cell.attrib.get('r')))
-            while xl_col != xl_cols[i]:
+            nm_col = self._col_to_num(xl_col)
+
+            while i < nm_col:
                 row.append(None)
                 i += 1
 

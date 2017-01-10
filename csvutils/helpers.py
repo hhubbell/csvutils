@@ -8,7 +8,6 @@
 from __future__ import division
 import csv
 import decimal
-import string
 
 
 KEY_VALUE_STR_FORMAT = '{:<{}}{:>{}}'
@@ -69,17 +68,6 @@ def indexes(haystack, needles):
         indexes = range(len(haystack))
 
     return indexes
-
-def letters(start, end):
-    """
-    Return a string of letters in the alphabet between the start and end
-    letters, including the end letter.
-    :param start [str]: Starting letter
-    :param end [str]: Ending letter
-    :return [str]: Range between start and end (inclusive)
-    """
-    az = string.ascii_uppercase
-    return az[az.index(start):az.index(end) + 1]
 
 def tofloat(value):
     """
