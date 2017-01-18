@@ -37,6 +37,8 @@ class XLSXParser(Parser):
         self.sheet_name = kwargs.get('sheet_name', 'Sheet1')
         self.dimension = kwargs.get('dimension')
         self.hasheader = kwargs.get('hasheader', True)
+        self.start_row = kwargs.get('start_row')
+        self.end_row = kwargs.get('end_row')
 
     def _col_to_num(self, column):
         """
@@ -48,6 +50,36 @@ class XLSXParser(Parser):
         ords = (ord(c.upper()) - ord('A') + 1 for c in column)
 
         return functools.reduce(func, ords)
+
+    def _in_range(self, row):
+        """
+        Check to make sure a given row is inside the specified range
+        of rows. Return boolean result.
+        :param row [Element]: Element Tree Element to check.  Must have
+            an `r` attribute - the element must be a row.
+        :return [bool]: True if the row is within the range.
+        """
+        index = int(row.attrib['r']) - 1
+
+        if self.start_row is None and self.end_row is None:
+            result = True
+
+        elif self.start_row is not None and self.end_row is not None \
+          and self.start_row <= index <= self.end_row:
+            result = True
+
+        elif self.start_row is not None and self.end_row is None \
+          and index >= self.start_row:
+            result = True
+
+        elif self.start_row is None and self.end_row is not None \
+          and index <= self.end_row:
+            result = True
+
+        else:
+            result = False
+
+        return result
 
     def _parse_row(self, tree):
         """
@@ -115,6 +147,12 @@ class XLSXParser(Parser):
         self._inparser.add_argument('--infile-no-header',
             action='store_false',
             dest='hasheader')
+        self._inparser.add_argument('--infile-start-row',
+            type=int,
+            dest='start_row')
+        self._inparser.add_argument('--infile-end-row',
+            type=int,
+            dest='end_row')
 
     def _set_sharedstrings(self, tree):
         """
@@ -158,8 +196,8 @@ class XLSXParser(Parser):
         if self.dimension is None:
             self.dimension = sheet.find(nstag(self.NS_MAIN, 'dimension')).attrib.get('ref')
 
-        header = self._parse_row(next(table))
-        rows = [self._parse_row(x) for x in table]
+        rows = [self._parse_row(x) for x in table if self._in_range(x)]
+        header = rows.pop(0)
 
         return header, rows
 
