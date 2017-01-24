@@ -38,12 +38,14 @@ class Parser(object):
 
         self._inparser.add_argument('file', nargs='?',
             type=argparse.FileType(self.READ_MODE),
-            default=sys.stdin)
+            default=sys.stdin,
+            help='Input file.')
 
         self._outparser.add_argument('-o', '--outfile', nargs='?',
             type=argparse.FileType(self.WRITE_MODE),
             default=sys.stdout,
-            dest='file')
+            dest='file',
+            help='Output file.')
 
     def parse_args(self, options):
         """
@@ -59,11 +61,16 @@ class Parser(object):
                 setattr(self, key, value)
 
         except AttributeError:
-            # FIXME Throw a csvutils specific exception
-            sys.stderr.write('ERROR: Parser had no designation')
+            raise NoParserDesignationError
 
     def read(self, *args, **kwargs):
         raise NotImplementedError
 
     def write(self, *args, **kwargs):
         raise NotImplementedError
+
+
+class NoParserDesignationError(Exception):
+
+    def __str__(self):
+        return 'Parser has no designation defined.'

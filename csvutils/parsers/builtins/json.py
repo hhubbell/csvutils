@@ -27,13 +27,16 @@ class JSONParser(Parser):
 
         self._outparser.add_argument('-P', '--outfile-pretty',
             action='store_true',
-            dest='pretty')
+            dest='pretty',
+            help='A flag to indicate the output should be human-readable.')
         # XXX Does not work
         self._outparser.add_argument('-i', '--outfile-indent',
             type=int,
             nargs='?',
             default=self.TAB_WIDTH,
-            dest='indent')
+            dest='indent',
+            help='The width of an indent. Only valid when the ' \
+                'outfile-pretty flag is also used. Default 4 spaces.')
 
     def write(self, fileobj):
         """

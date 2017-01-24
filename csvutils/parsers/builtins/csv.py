@@ -32,14 +32,19 @@ class CSVParser(Parser):
         self._inparser.add_argument('-d', '--infile-delim',
             nargs='?',
             default=',',
-            dest='delimiter')
+            dest='delimiter',
+            help='Input file delimiter. Default comma.')
         self._inparser.add_argument('--infile-no-header',
             action='store_false',
-            dest='hasheader')
+            dest='hasheader',
+            help='A flag to indicate the first row of the input file ' \
+                'is not the header row. If set, a generic header will be ' \
+                'assigned.')
         self._inparser.add_argument('--infile-lineterminator',
             nargs='?',
             default='\n',
-            dest='lineterminator')
+            dest='lineterminator',
+            help='Input file line terminator. Default newline character.')
         self._inparser.add_argument('--infile-quoting',
             nargs='?',
             default=csv.QUOTE_MINIMAL,
@@ -47,19 +52,27 @@ class CSVParser(Parser):
             choices=[csv.QUOTE_ALL,
                 csv.QUOTE_MINIMAL,
                 csv.QUOTE_NONNUMERIC,
-                csv.QUOTE_NONE])
+                csv.QUOTE_NONE],
+            help='Input file quoting level. Default 0; QUOTE_MINIMAL. ' \
+                'Other options are: 1 - QUOTE_ALL 2 - QUOTE_NONNUMERIC\n' \
+                '3 - QUOTE_NONE')
 
         self._outparser.add_argument('-D', '--outfile-delim',
             nargs='?',
             default=',',
-            dest='delimiter')
+            dest='delimiter',
+            help='Output file delimiter. Default comma.')
         self._outparser.add_argument('--outfile-no-header',
             action='store_false',
-            dest='hasheader')
+            dest='hasheader',
+            help='A flag to indicate the first row of the output file ' \
+                'should not be the header. If set, no header will be output ' \
+                'regardless of whether a header exists.')
         self._outparser.add_argument('--outfile-lineterminator',
             nargs='?',
             default='\n',
-            dest='lineterminator')
+            dest='lineterminator',
+            help='Output file line terminator. Default newline character.')
         self._outparser.add_argument('--outfile-quoting',
             nargs='?',
             default=csv.QUOTE_MINIMAL,
@@ -67,7 +80,10 @@ class CSVParser(Parser):
             choices=[csv.QUOTE_ALL,
                 csv.QUOTE_MINIMAL,
                 csv.QUOTE_NONNUMERIC,
-                csv.QUOTE_NONE])
+                csv.QUOTE_NONE],
+            help='Output file quoting level. Default 0 - QUOTE_MINIMAL. ' \
+                'Other options are: 1 - QUOTE_ALL 2 - QUOTE_NONNUMERIC\n' \
+                '3 - QUOTE_NONE')
 
     def read(self, fileobj):
         """

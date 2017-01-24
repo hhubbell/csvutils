@@ -15,14 +15,20 @@ def _default_arguments():
     Returns ArgumentParser with args used in all utils
     :return ArgumentParser:     ArgumentParser object
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument('-h', '--help',
+        nargs='?',
+        action=CSVUtilsHelpAction,
+        help='Show this help message and exit.')
     parser.add_argument('-f', '--from',
         dest='informat',
         nargs='?',
-        default='csv')
+        default='csv',
+        help='Input file type. Default CSV.')
     parser.add_argument('-v', '--version',
         action='version',
-        version=pkg_resources.get_distribution(__package__).version)
+        version=pkg_resources.get_distribution(__package__).version,
+        help='Print version number and exit.')
     # XXX Allow global no-header? (sets both infile and outfile)
     # parser.add_argument('-N', '--no-header',
     #    action='store_false',
@@ -35,17 +41,26 @@ def csvavg():
     Command line utility to average a csv file
     """
     parser = _default_arguments()
-    parser.add_argument('-c', '--cols', nargs='*')
+    parser.add_argument('-c', '--cols', nargs='*',
+        help='A list of columns. Each column will have an average generated.')
     parser.add_argument('-a', '--alphabetize',
-        action='store_true')
+        action='store_true',
+        help='A flag to indicate the output should be displayed in ' \
+            'alphabetical order. This argument is only valid if the output ' \
+            'is transposed. Equivalent to `csvavg ... -T | sort`.')
     parser.add_argument('-p', '--precision',
-        type=int)
+        type=int,
+        help='The number of decimal places to show.')
     parser.add_argument('-t', '--to',
         dest='outformat',
         nargs='?',
-        default='csv')
+        default='csv',
+        help='Output file type. Default CSV.')
     parser.add_argument('-T', '--transpose',
-        action='store_true')
+        action='store_true',
+        help='A flag to indicate the output should be transposed so that ' \
+            'there are two columns and N rows, where N equals the number ' \
+            'of columns indicated to average.')
 
     args, remainder = parser.parse_known_args()
 
@@ -81,7 +96,8 @@ def csvconvert():
     parser.add_argument('-t', '--to',
         dest='outformat',
         nargs='?',
-        default='csv')
+        default='csv',
+        help='Output file type. Default CSV.')
 
     args, remainder = parser.parse_known_args()
 
@@ -98,7 +114,8 @@ def csvdrop():
     Command line utility to drop columns from a csv file
     """
     parser = _default_arguments()
-    parser.add_argument('-c', '--cols', nargs='*')
+    parser.add_argument('-c', '--cols', nargs='*',
+        help='A list of columns. Each column listed will be dropped.')
 
     args, remainder = parser.parse_known_args()
 
@@ -120,7 +137,8 @@ def csvkeep():
     Command line utiltiy to keep columns in a csv file. The inverse of csvdrop
     """
     parser = _default_arguments()
-    parser.add_argument('-c', '--cols', nargs='*')
+    parser.add_argument('-c', '--cols', nargs='*',
+        help='A list of columns. Each column listed will be kept.')
 
     args, remainder = parser.parse_known_args()
 
@@ -142,17 +160,26 @@ def csvsum():
     Command line utility to sum a csv file
     """
     parser = _default_arguments()
-    parser.add_argument('-c', '--cols', nargs='*')
+    parser.add_argument('-c', '--cols', nargs='*',
+        help='A list of columns. Each column will have a sum generated.')
     parser.add_argument('-a', '--alphabetize',
-        action='store_true')
+        action='store_true',
+        help='A flag to indicate the output should be displayed in ' \
+            'alphabetical order. This argument is only valid if the output ' \
+            'is transposed. Equivalent to `csvsum ... -T | sort`.')
     parser.add_argument('-p', '--precision',
-        type=int)
+        type=int,
+        help='The number of decimal places to show.')
     parser.add_argument('-t', '--to',
         dest='outformat',
         nargs='?',
-        default='csv')
+        default='csv',
+        help='Output file type. Default CSV.')
     parser.add_argument('-T', '--transpose',
-        action='store_true')
+        action='store_true',
+        help='A flag to indicate the output should be transposed so that ' \
+            'there are two columns and N rows, where N equals the number ' \
+            'of columns indicated to sum.')
 
     args, remainder = parser.parse_known_args()
 
@@ -200,3 +227,16 @@ def csvtab():
         pad=outformat.padding)
 
     outformat.write(outformat.file)
+
+
+class CSVUtilsHelpAction(argparse.Action):
+
+    def __call__(self, parser, namespace, value, option_string):
+        if value is None:
+            parser.print_help()
+        else:
+            fileparser = getattr(parsers, value)()
+            fileparser._inparser.print_help()
+            fileparser._outparser.print_help()
+
+        parser.exit()
