@@ -46,7 +46,8 @@ class HTMLParser(Parser):
 
         self._outparser.add_argument('-P', '--outfile-pretty',
             action='store_true',
-            dest='pretty')
+            dest='pretty',
+            help='A flag to indicate the output should be human-readable.')
 
     def write(self, fileobj):
         """

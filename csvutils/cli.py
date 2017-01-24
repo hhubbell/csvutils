@@ -15,7 +15,11 @@ def _default_arguments():
     Returns ArgumentParser with args used in all utils
     :return ArgumentParser:     ArgumentParser object
     """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument('-h', '--help',
+        nargs='?',
+        action=CSVUtilsHelpAction,
+        help='Show this help message and exit.')
     parser.add_argument('-f', '--from',
         dest='informat',
         nargs='?',
@@ -24,7 +28,7 @@ def _default_arguments():
     parser.add_argument('-v', '--version',
         action='version',
         version=pkg_resources.get_distribution(__package__).version,
-        help='Print version number and quit.')
+        help='Print version number and exit.')
     # XXX Allow global no-header? (sets both infile and outfile)
     # parser.add_argument('-N', '--no-header',
     #    action='store_false',
@@ -223,3 +227,16 @@ def csvtab():
         pad=outformat.padding)
 
     outformat.write(outformat.file)
+
+
+class CSVUtilsHelpAction(argparse.Action):
+
+    def __call__(self, parser, namespace, value, option_string):
+        if value is None:
+            parser.print_help()
+        else:
+            fileparser = getattr(parsers, value)()
+            fileparser._inparser.print_help()
+            fileparser._outparser.print_help()
+
+        parser.exit()

@@ -31,22 +31,30 @@ class TableParser(Parser):
         self._outparser.add_argument('-D', '--outfile-delim',
             nargs='?',
             default=' ',
-            dest='delimiter')
+            dest='delimiter',
+            help='Output delimiter. Default space')
         self._outparser.add_argument('--outfile-no-header',
             action='store_false',
-            dest='hasheader')
+            dest='hasheader',
+            help='A flag to indicate the output does not have a header ' \
+                'that should be displayed.')
         self._outparser.add_argument('--outfile-lineterminator',
             nargs='?',
             default='\n',
-            dest='lineterminator')
+            dest='lineterminator',
+            help='Output line terminator. Default newline character.')
         self._outparser.add_argument('--outfile-column-maxwidth',
             type=int,
-            dest='column_maxwidth')
+            dest='column_maxwidth',
+            help='The max width of a column. Values that have a width ' \
+                'exceeding this number will be truncated.')
         self._outparser.add_argument('--outfile-padding',
             nargs='?',
             type=int,
             default=0,
-            dest='padding')
+            dest='padding',
+            help='The amount of padding to apply to a column (in spaces). ' \
+                'Default no padding.')
 
     def write(self, fileobj):
         """
