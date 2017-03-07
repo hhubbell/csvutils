@@ -128,7 +128,7 @@ class XLSXParser(Parser):
         for cell in tree.iter(col):
             # Insert blank columns if necessary.
             xl_col = ''.join(filter(str.isalpha, cell.attrib.get('r')))
-            nm_col = self._col_to_num(xl_col)
+            nm_col = self._col_to_num(xl_col) - 1
 
             while i < nm_col:
                 row.append(None)
