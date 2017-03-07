@@ -21,6 +21,7 @@ class XLSXParser(Parser):
     NS_MAIN = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
 
     STRINGS = 'xl/sharedStrings.xml'
+    XFSTYLE = 'xl/styles.xml'
     WORKBOOK = 'xl/workbook.xml'
     WORKSHEET = 'xl/worksheets/sheet{}.xml'
 
@@ -50,6 +51,32 @@ class XLSXParser(Parser):
         ords = (ord(c.upper()) - ord('A') + 1 for c in column)
 
         return functools.reduce(func, ords)
+
+    def _get_display_type(self, cell):
+        """
+        Return a cell's contents as it would appear on a worksheet.
+        :param cell [Element]: Element Tree Element XLSX Cell
+        :return [mixed]: String, Decimal, integer, None, etc...
+        """
+        value = cell.find(nstag(self.NS_MAIN, 'v'))
+        content = value.text if value is not None else None
+
+        if content is None:
+            display = content
+        elif cell.attrib.get('t'):
+            display = self._ss_lookup(int(content))
+        elif cell.attrib.get('s'):
+            num_fmt = int(self._xf_lookup(int(cell.attrib.get('s'))))
+            # MVP: Dates (14)
+            if num_fmt == 14:
+                dv = datetime.timedelta(days=int(content))
+                display = (self.EPOCH + dv).strftime('%m/%d/%Y')
+            else:
+                display = content
+        else:
+            display = content
+
+        return display
 
     def _in_range(self, row):
         """
@@ -107,27 +134,7 @@ class XLSXParser(Parser):
                 row.append(None)
                 i += 1
 
-            if cell.find(val) is not None:
-                value = cell.find(val).text
-            else:
-                value = None
-
-            if value is None:
-                row.append(value)
-            elif cell.attrib.get('t'):
-                row.append(self._ss_lookup(int(value)))
-                """
-                FIXME:
-                elif cell.attrib.get('s'):
-                    num_fmt = cell.attrib.get('s')
-
-                    delta = datetime.timedelta(days=int(value))
-                    print(delta)
-                    row.append(self.EPOCH + delta)
-                """
-            else:
-                row.append(value)
-
+            row.append(self._get_display_type(cell))
             i += 1
 
         return row
@@ -161,6 +168,14 @@ class XLSXParser(Parser):
         """
         self._sharedstrings = list(tree.iter(nstag(self.NS_MAIN, 'si')))
 
+    def _set_xfstyles(self, tree):
+        """
+        Set the xfstyle lookup.
+        :param tree [Element]: ElemetTree element
+        """
+        xftree = tree.find(nstag(self.NS_MAIN, 'cellXfs'))
+        self._xfstyles = list(xftree.iter(nstag(self.NS_MAIN, 'xf')))
+
     def _ss_lookup(self, index):
         """
         Return the shared string value at a given index.
@@ -168,6 +183,14 @@ class XLSXParser(Parser):
         :return [str]: Value at index
         """
         return self._sharedstrings[index].find(nstag(self.NS_MAIN, 't')).text
+
+    def _xf_lookup(self, index):
+        """
+        Return the style value at a given index.
+        :param index [int]: List index
+        :return [int]: Value at index
+        """
+        return self._xfstyles[index].attrib['numFmtId']
 
     def read(self, fileobj):
         """
@@ -179,6 +202,7 @@ class XLSXParser(Parser):
         workbook = ElementTree.fromstring(archive.read(self.WORKBOOK))
 
         self._set_sharedstrings(ElementTree.fromstring(archive.read(self.STRINGS)))
+        self._set_xfstyles(ElementTree.fromstring(archive.read(self.XFSTYLE)))
 
         tgt = None
         sheets = list(workbook.iter(nstag(self.NS_MAIN, 'sheet')))
