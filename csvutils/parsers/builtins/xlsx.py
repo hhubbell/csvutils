@@ -36,6 +36,7 @@ class XLSXParser(Parser):
         super(XLSXParser, self).__init__(*args, **kwargs)
 
         self.sheet_name = kwargs.get('sheet_name', 'Sheet1')
+        self.sheet_id = kwargs.get('sheet_id')
         self.dimension = kwargs.get('dimension')
         self.hasheader = kwargs.get('hasheader', True)
         self.start_row = kwargs.get('start_row')
@@ -77,6 +78,31 @@ class XLSXParser(Parser):
             display = content
 
         return display
+
+    def _get_sheet(self, archive):
+        """
+        Find and open the desired worksheet. Prefer sheet_id over sheet_name.
+        :param archive [ElementTree]: Open workbook archive
+        :return [ElementTree]: Sheet element tree
+        """
+        workbook = ElementTree.fromstring(archive.read(self.WORKBOOK))
+        sheets = list(workbook.iter(nstag(self.NS_MAIN, 'sheet')))
+
+        if self.sheet_id is not None:
+            if 0 < self.sheet_id <= len(sheets):
+                sheet = self.sheet_id
+            else:
+                raise InvalidSheetError(self.sheet_id, 'index',
+                    options=(str(x) for x in range(1, len(sheets) + 1)))
+        else:
+            try:
+                names = [x.attrib.get('name') for x in sheets]
+                sheet = next(i for i, x in enumerate(names, 1) if x == self.sheet_name)
+            except StopIteration:
+                raise InvalidSheetError(self.sheet_name, 'name',
+                    options=(x.attrib.get('name') for x in sheets))
+
+        return ElementTree.fromstring(archive.read(self.WORKSHEET.format(sheet)))
 
     def _in_range(self, row):
         """
@@ -149,6 +175,9 @@ class XLSXParser(Parser):
             nargs='?',
             default='Sheet1',
             dest='sheet_name')
+        self._inparser.add_argument('--infile-sheet-index',
+            type=int,
+            dest='sheet_id')
         self._inparser.add_argument('--infile-dim',
             dest='dimension')
         self._inparser.add_argument('--infile-no-header',
@@ -199,22 +228,11 @@ class XLSXParser(Parser):
         :return [tuple]: header, rows tuple.
         """
         archive = zipfile.ZipFile(fileobj, 'r')
-        workbook = ElementTree.fromstring(archive.read(self.WORKBOOK))
 
         self._set_sharedstrings(ElementTree.fromstring(archive.read(self.STRINGS)))
         self._set_xfstyles(ElementTree.fromstring(archive.read(self.XFSTYLE)))
 
-        tgt = None
-        sheets = list(workbook.iter(nstag(self.NS_MAIN, 'sheet')))
-        for sheet in sheets:
-            if sheet.attrib.get('name') == self.sheet_name:
-                tgt = sheet.attrib.get('sheetId')
-
-        if tgt is None:
-            raise InvalidSheetNameError(self.sheet_name, 
-                options=(x.attrib.get('name') for x in sheets))
-
-        sheet = ElementTree.fromstring(archive.read(self.WORKSHEET.format(tgt)))
+        sheet = self._get_sheet(archive)
         table = sheet.iter(nstag(self.NS_MAIN, 'row'))
 
         if self.dimension is None:
@@ -231,13 +249,14 @@ class XLSXParser(Parser):
     #    """
 
 
-class InvalidSheetNameError(Exception):
-    MESSAGE = "Sheet '{}' is not in workbook. Please select " \
+class InvalidSheetError(Exception):
+    MESSAGE = "Sheet {} '{}' is not in workbook. Please select " \
         "one of the following: {}"
 
-    def __init__(self, sheet, options=None):
+    def __init__(self, sheet, identifier, options=None):
         self.sheet = sheet
+        self.identifier = identifier
         self.options = ', '.join(options) if options is not None else ''
 
     def __str__(self):
-        return self.MESSAGE.format(self.sheet, self.options)
+        return self.MESSAGE.format(self.identifier, self.sheet, self.options)
