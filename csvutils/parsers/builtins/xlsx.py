@@ -35,8 +35,8 @@ class XLSXParser(Parser):
         """
         super(XLSXParser, self).__init__(*args, **kwargs)
 
-        self.sheet_name = kwargs.get('sheet_name', 'Sheet1')
-        self.sheet_id = kwargs.get('sheet_id')
+        self.sheet_name = kwargs.get('sheet_name')
+        self.sheet_id = kwargs.get('sheet_id', 1)
         self.dimension = kwargs.get('dimension')
         self.hasheader = kwargs.get('hasheader', True)
         self.start_row = kwargs.get('start_row')
@@ -88,7 +88,7 @@ class XLSXParser(Parser):
         workbook = ElementTree.fromstring(archive.read(self.WORKBOOK))
         sheets = list(workbook.iter(nstag(self.NS_MAIN, 'sheet')))
 
-        if self.sheet_id is not None:
+        if self.sheet_id is not None and self.sheet_name is None:
             if 0 < self.sheet_id <= len(sheets):
                 sheet = self.sheet_id
             else:
@@ -171,12 +171,12 @@ class XLSXParser(Parser):
         """
         super(XLSXParser, self)._set_argparser_options()
 
-        self._inparser.add_argument('--infile-sheet',
+        self._inparser.add_argument('--infile-sheet-name',
             nargs='?',
-            default='Sheet1',
             dest='sheet_name')
         self._inparser.add_argument('--infile-sheet-index',
             type=int,
+            default=1,
             dest='sheet_id')
         self._inparser.add_argument('--infile-dim',
             dest='dimension')
