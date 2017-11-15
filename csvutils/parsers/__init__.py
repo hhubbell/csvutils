@@ -1,5 +1,9 @@
 #
-# Dynamically load parsers from entry points
+# Dynamically load parsers from entry points. Ignore modules if
+# they have already been imported, or if they raise an exception.
+#
+# TODO: Determine which exceptions occur.
+# TODO: Raise warning on repeat import.
 #
 
 import sys

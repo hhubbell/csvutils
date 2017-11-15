@@ -26,4 +26,4 @@ setup(
             'html=csvutils.parsers.builtins.html:HTMLParser',
             'json=csvutils.parsers.builtins.json:JSONParser',
             'table=csvutils.parsers.builtins.table:TableParser',
-            'xlsx=csvutils.parsers.builtins.xlsx:XLSXParser']})
+            'xlsx_basic=csvutils.parsers.builtins.xlsx_basic:XLSXParser']})
