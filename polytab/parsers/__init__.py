@@ -1,8 +1,9 @@
 #
 # Dynamically load parsers from entry points. Ignore modules if
 # they have already been imported, or if they raise an exception.
+# Print a warning if either occur.
 #
-# TODO: Determine which exceptions occur.
+# TODO: Determine which exceptions occur. (ModuleNotFoundError)
 # TODO: Raise warning on repeat import.
 #
 
