@@ -97,11 +97,14 @@ def tabulate(fileobj, parser=None, maxw=None, pad=0):
     full.insert(0, header)
     flat = zip(*full)
     fmt = lambda s, w, a='<': '{:{}{}}'.format(s, a, w)
+    strnone = lambda x: str(x) if x is not None else None
     fmtcol = []
 
     for head, vals in zip(header, flat):
+        vals = [strnone(x) for x in vals]
         calign = helpers.align(vals[1:])
-        cmax = max(len(x) for x in vals) + pad
+        cells = [len(x) for x in vals if x is not None]
+        cmax = max(cells) + pad if cells else 0
         cmax = maxw if maxw is not None and maxw < cmax else cmax
         fmtcol.append([fmt(helpers.trunc(x, cmax), cmax, calign) for x in vals])
 
