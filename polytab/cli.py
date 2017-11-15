@@ -3,7 +3,7 @@
 #
 
 from __future__ import absolute_import
-from . import csvutils, helpers, parsers
+from . import polytab, helpers, parsers
 import argparse
 import csv
 import pkg_resources
@@ -70,7 +70,7 @@ def csvavg():
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
 
-    cols, avgs = zip(*csvutils.fmap(informat.file, helpers.avg,
+    cols, avgs = zip(*polytab.fmap(informat.file, helpers.avg,
         parser=informat,
         columns=args.cols))
 
@@ -107,7 +107,7 @@ def csvconvert():
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
 
-    csvutils.convert(informat.file, informat, outformat).write(outformat.file)
+    polytab.convert(informat.file, informat, outformat).write(outformat.file)
 
 def csvdrop():
     """
@@ -122,7 +122,7 @@ def csvdrop():
     informat = getattr(parsers, args.informat)(designation='inparser')
     informat.parse_args(remainder)
 
-    header, rows = csvutils.drop(informat.file,
+    header, rows = polytab.drop(informat.file,
         parser=informat,
         columns=args.cols)
 
@@ -145,7 +145,7 @@ def csvkeep():
     informat = getattr(parsers, args.informat)(designation='inparser')
     informat.parse_args(remainder)
 
-    header, rows = csvutils.keep(informat.file,
+    header, rows = polytab.keep(informat.file,
         parser=informat,
         columns=args.cols)
 
@@ -189,7 +189,7 @@ def csvsum():
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
 
-    cols, sums = zip(*csvutils.fmap(informat.file, sum,
+    cols, sums = zip(*polytab.fmap(informat.file, sum,
         parser=informat,
         columns=args.cols))
 
@@ -221,7 +221,7 @@ def csvtab():
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
 
-    outformat.rows = csvutils.tabulate(informat.file,
+    outformat.rows = polytab.tabulate(informat.file,
         parser=informat,
         maxw=outformat.column_maxwidth,
         pad=outformat.padding)

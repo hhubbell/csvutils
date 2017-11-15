@@ -11,7 +11,7 @@ For example a parser can be defined like so:
 
 ```python
 # myparser.py
-from csvutils.parsers import base
+from polytab.parsers import base
 
 
 class MyParser(base.Parser):
@@ -36,11 +36,11 @@ setup(
     name='my_module',
     packages=['myparser'],
     entry_points={
-        'csvutils.parsers': 'myparser = myparser.myparser:MyParser'
+        'polytab.parsers': 'myparser = myparser.myparser:MyParser'
     })
 ```
 
-Now the parser is available as part of the csvutils library
+Now the parser is available as part of the polytab library
 ```bash
 csvconvert -f csv -t myparser file.csv
 ```

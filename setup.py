@@ -3,27 +3,27 @@ import os
 import re
 
 def get_version():
-    with open(os.path.join('csvutils', '__init__.py'), 'r') as f:
+    with open(os.path.join('polytab', '__init__.py'), 'r') as f:
         return re.search('^__version__ = \'(.*)\'$', f.read(), re.M).group(1)
 
 setup(
-    name='csvutils',
+    name='polytab',
     version=get_version(),
-    description='A group of utilities for exploring and manipulating csv files.',
+    description='A group of utilities for exploring and manipulating tabular files.',
     author='Harry Hubbell',
-    url='https://github.com/hhubbell/csvutils',
-    packages=['csvutils', 'csvutils.parsers', 'csvutils.parsers.builtins'],
+    url='https://github.com/hhubbell/polytab',
+    packages=['polytab', 'polytab.parsers', 'polytab.parsers.builtins'],
     entry_points={
         'console_scripts': [
-            'csvavg=csvutils.cli:csvavg',
-            'csvconvert=csvutils.cli:csvconvert',
-            'csvdrop=csvutils.cli:csvdrop',
-            'csvkeep=csvutils.cli:csvkeep',
-            'csvsum=csvutils.cli:csvsum',
-            'csvtab=csvutils.cli:csvtab'],
-        'csvutils.parsers': [
-            'csv=csvutils.parsers.builtins.csv:CSVParser',
-            'html=csvutils.parsers.builtins.html:HTMLParser',
-            'json=csvutils.parsers.builtins.json:JSONParser',
-            'table=csvutils.parsers.builtins.table:TableParser',
-            'xlsx_basic=csvutils.parsers.builtins.xlsx_basic:XLSXParser']})
+            'csvavg=polytab.cli:csvavg',
+            'csvconvert=polytab.cli:csvconvert',
+            'csvdrop=polytab.cli:csvdrop',
+            'csvkeep=polytab.cli:csvkeep',
+            'csvsum=polytab.cli:csvsum',
+            'csvtab=polytab.cli:csvtab'],
+        'polytab.parsers': [
+            'csv=polytab.parsers.builtins.csv:CSVParser',
+            'html=polytab.parsers.builtins.html:HTMLParser',
+            'json=polytab.parsers.builtins.json:JSONParser',
+            'table=polytab.parsers.builtins.table:TableParser',
+            'xlsx_basic=polytab.parsers.builtins.xlsx_basic:XLSXParser']})

@@ -1,12 +1,12 @@
 #
-# This file contains the following functionality for csvutils
-#   Constants
-#   File IO utilities
-#   Iterable manipulation
+# File:         helpers.py
+# Description:  This file contains the following functionality:
+#                   Constants
+#                   File IO utilities
+#                   Iterable manipulation
 #
 
 from __future__ import division
-import csv
 import decimal
 
 

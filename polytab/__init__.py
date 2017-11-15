@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from .csvutils import *
+from .polytab import *
 from .cli import *
 from .parsers import *
 
