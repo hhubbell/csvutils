@@ -1,5 +1,5 @@
 #
-# CSV Manipulation Library
+# Tabular data manipulation library
 #
 
 from __future__ import absolute_import

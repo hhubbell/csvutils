@@ -15,6 +15,8 @@ setup(
     packages=['polytab', 'polytab.parsers', 'polytab.parsers.builtins'],
     entry_points={
         'console_scripts': [
+            'polytab=polytab.__main__:main',
+            # XXX: DEPRECATED - Leave for now just for testing
             'csvavg=polytab.cli:csvavg',
             'csvconvert=polytab.cli:csvconvert',
             'csvdrop=polytab.cli:csvdrop',

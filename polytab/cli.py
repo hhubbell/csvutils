@@ -1,4 +1,8 @@
 #
+# XXX DEPRECATED XXX
+#
+# Remove in future release
+#
 # Provide a consistent argparser api
 #
 
