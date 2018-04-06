@@ -127,59 +127,63 @@ def main():
         version=pkg_resources.get_distribution(__package__).version,
         help='Print version number and exit.')
 
-    subparsers = parser.add_subparsers(dest='func')
+    subparsers = parser.add_subparsers() #dest='func')
 
     # polytab map
-    fmap = subparsers.add_parser('map')
-    fmap.add_argument('function',
+    sp_fmap = subparsers.add_parser('map')
+    sp_fmap.add_argument('function',
         choices=MAP_FUNCTIONS.keys(),
         help='Function to apply across all records of a column')
-    fmap.add_argument('-c', '--cols', nargs='*',
+    sp_fmap.add_argument('-c', '--cols', nargs='*',
         help='A list of columns. Each column will have an average generated.')
-    fmap.add_argument('-a', '--alphabetize',
+    sp_fmap.add_argument('-a', '--alphabetize',
         action='store_true',
         help='A flag to indicate the output should be displayed in ' \
             'alphabetical order. This argument is only valid if the output ' \
             'is transposed. Equivalent to `csvavg ... -T | sort`.')
-    fmap.add_argument('-p', '--precision',
+    sp_fmap.add_argument('-p', '--precision',
         type=int,
         help='The number of decimal places to show.')
-    fmap.add_argument('-t', '--to',
+    sp_fmap.add_argument('-t', '--to',
         dest='outformat',
         nargs='?',
         default='csv',
         help='Output file type. Default CSV.')
-    fmap.add_argument('-T', '--transpose',
+    sp_fmap.add_argument('-T', '--transpose',
         action='store_true',
         help='A flag to indicate the output should be transposed so that ' \
             'there are two columns and N rows, where N equals the number ' \
             'of columns indicated to average.')
+    sp_fmap.set_defaults(func=map)
 
     # polytab convert
-    convert = subparsers.add_parser('convert')
-    convert.add_argument('-t', '--to',
+    sp_convert = subparsers.add_parser('convert')
+    sp_convert.add_argument('-t', '--to',
         dest='outformat',
         nargs='?',
         default='csv',
         help='Output file type. Default CSV.')
+    sp_convert.set_defaults(func=convert)
 
     #polytab drop
-    drop = subparsers.add_parser('drop')
-    drop.add_argument('-c', '--cols', nargs='*',
+    sp_drop = subparsers.add_parser('drop')
+    sp_drop.add_argument('-c', '--cols', nargs='*',
         help='A list of columns. Each column listed will be dropped.')
+    sp_drop.set_defaults(func=drop)
 
     # polytab keep
-    keep = subparsers.add_parser('keep')
-    keep.add_argument('-c', '--cols', nargs='*',
+    sp_keep = subparsers.add_parser('keep')
+    sp_keep.add_argument('-c', '--cols', nargs='*',
         help='A list of columns. Each column listed will be kept.')
+    sp_keep.set_defaults(func=keep)
 
     # polytab tab
-    tab = subparsers.add_parser('tab')
+    sp_tab = subparsers.add_parser('tab')
+    sp_tab.set_defaults(func=tab)
  
-    # `parse_known_args` is causing problems with `set_defaults`, so use
-    # `dest` instead. This just means a little extra work on our end.
+    # Call subparser function
     args, remainder = parser.parse_known_args()
-    getattr(sys.modules[__name__], args.func)(args, remainder)
+    args.func(args, remainder)
 
 
 class CSVUtilsHelpAction(argparse.Action):
