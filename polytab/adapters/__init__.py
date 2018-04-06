@@ -1,5 +1,5 @@
 #
-# Dynamically load parsers from entry points. Ignore modules if
+# Dynamically load adapters from entry points. Ignore modules if
 # they have already been imported, or if they raise an exception.
 # Print a warning if either occur.
 #
@@ -11,7 +11,7 @@ import sys
 import pkg_resources
 
 
-for _ep in pkg_resources.iter_entry_points('polytab.parsers'):
+for _ep in pkg_resources.iter_entry_points('polytab.adapters'):
     _mod = __import__(_ep.module_name, fromlist=_ep.attrs)
     setattr(sys.modules[__name__], _ep.name, getattr(_mod, _ep.attrs[0]))
 

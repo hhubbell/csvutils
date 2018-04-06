@@ -3,27 +3,27 @@
 #
 
 from __future__ import absolute_import
-from ..base import Parser
+from ..base import Adapter
 import json
 
 
-class JSONParser(Parser):
+class JSONAdapter(Adapter):
     TAB_WIDTH = 4
 
     def __init__(self, *args, **kwargs):
         """
         :option pretty [bool]: Make JSON human-readable
         """
-        super(JSONParser, self).__init__(*args, **kwargs)
+        super(JSONAdapter, self).__init__(*args, **kwargs)
 
         self.pretty = kwargs.get('pretty', False)
         self.indent = kwargs.get('indent', self.TAB_WIDTH)
 
     def _set_argparse_options(self):
         """
-        Creates an ArgumentParser with the parser's allowed arguments.
+        Creates an ArgumentParser with the adapter's allowed arguments.
         """
-        super(JSONParser, self)._set_argparser_options()
+        super(JSONAdapter, self)._set_argparser_options()
 
         self._outparser.add_argument('-P', '--outfile-pretty',
             action='store_true',

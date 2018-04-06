@@ -3,11 +3,11 @@
 #
 
 from __future__ import absolute_import
-from ..base import Parser
+from ..base import Adapter
 import csv
 
 
-class CSVParser(Parser):
+class CSVAdapter(Adapter):
 
     def __init__(self, *args, **kwargs):
         """
@@ -16,7 +16,7 @@ class CSVParser(Parser):
         :option lineterminator [str]: Row delimiter
         :option quoting [int]: Quoting level
         """
-        super(CSVParser, self).__init__(*args, **kwargs)
+        super(CSVAdapter, self).__init__(*args, **kwargs)
 
         self.delimiter = kwargs.get('delimiter', ',')
         self.hasheader = kwargs.get('hasheader', True)
@@ -25,9 +25,9 @@ class CSVParser(Parser):
 
     def _set_argparser_options(self):
         """
-        Creates an ArgumentParser with the parser's allowed arguments.
+        Creates an ArgumentParser with the adapter's allowed arguments.
         """
-        super(CSVParser, self)._set_argparser_options()
+        super(CSVAdapter, self)._set_argparser_options()
 
         self._inparser.add_argument('-d', '--infile-delim',
             nargs='?',
@@ -54,7 +54,7 @@ class CSVParser(Parser):
                 csv.QUOTE_NONNUMERIC,
                 csv.QUOTE_NONE],
             help='Input file quoting level. Default 0; QUOTE_MINIMAL. ' \
-                'Other options are: 1 - QUOTE_ALL 2 - QUOTE_NONNUMERIC\n' \
+                'Other options are: 1 - QUOTE_ALL\n2 - QUOTE_NONNUMERIC\n' \
                 '3 - QUOTE_NONE')
 
         self._outparser.add_argument('-D', '--outfile-delim',

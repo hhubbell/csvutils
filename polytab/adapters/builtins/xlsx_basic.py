@@ -1,9 +1,9 @@
 #
-# xlsx parser
+# xlsx_basic.py
 #
 
 from __future__ import absolute_import
-from ..base import Parser
+from ..base import Adapter
 import datetime
 import functools
 import zipfile
@@ -14,7 +14,7 @@ def nstag(ns, tag):
     return '{{{}}}{}'.format(ns, tag)
 
 
-class XLSXParser(Parser):
+class XLSXAdapter(Adapter):
     READ_MODE = 'rb'
     WRITE_MODE = 'wb'
 
@@ -33,7 +33,7 @@ class XLSXParser(Parser):
         :option dimension [str]: Excel range notation (A1:B2)
         :option hasheader [bool]: Use first row in table as header
         """
-        super(XLSXParser, self).__init__(*args, **kwargs)
+        super(XLSXAdapter, self).__init__(*args, **kwargs)
 
         self.sheet_name = kwargs.get('sheet_name')
         self.sheet_id = kwargs.get('sheet_id', 1)
@@ -167,9 +167,9 @@ class XLSXParser(Parser):
 
     def _set_argparser_options(self):
         """
-        Creates an ArgumentParser with the parser's allowed arguments.
+        Creates an ArgumentParser with the adapter's allowed arguments.
         """
-        super(XLSXParser, self)._set_argparser_options()
+        super(XLSXAdapter, self)._set_argparser_options()
 
         self._inparser.add_argument('--infile-sheet-name',
             nargs='?',

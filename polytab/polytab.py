@@ -20,19 +20,19 @@ def convert(fileobj, informat, outformat):
 
     return outformat
 
-def fmap(fileobj, func, parser=None, columns=None):
+def fmap(fileobj, func, adapter=None, columns=None):
     """
     Apply a function across columns in a csv file
     :param file_obj:    Open csv file handle
     :param func:        Function to apply
-    :option parser:     File parser, will default to standard CSV
+    :option adapter:    File adapter, will default to standard CSV
     :option columns:    CSV header columns to average, default all
     :return list:       List of column: result tuples
     """
     columns = columns if columns is not None else []
-    parser = parser if parser is not None else parsers.csv()
+    adapter = adapter if adapter is not None else adapters.csv()
 
-    header, rows = parser.read(fileobj)
+    header, rows = adapter.read(fileobj)
 
     to_app = helpers.indexes(header, columns)
     res = []
@@ -42,18 +42,18 @@ def fmap(fileobj, func, parser=None, columns=None):
 
     return zip(helpers.ikeep(header, to_app), res)
 
-def drop(fileobj, parser=None, columns=None):
+def drop(fileobj, adapter=None, columns=None):
     """
     Transform a list of headers and rows to remove specific values
     :param file_obj:    Open csv file handle
-    :option parser:     File parser, will default to standard CSV
+    :option adapter:    File adapter, will default to standard CSV
     :option columns:    CSV header columns to drop, default all
     :return tuple:      New header/rows
     """
     columns = columns if columns is not None else []
-    parser = parser if parser is not None else parsers.csv()
+    adapter = adapter if adapter is not None else adapters.csv()
 
-    header, rows = parser.read(fileobj)
+    header, rows = adapter.read(fileobj)
 
     drops = helpers.indexes(header, columns)
 
@@ -62,18 +62,18 @@ def drop(fileobj, parser=None, columns=None):
 
     return mod_h, mod_r
 
-def keep(fileobj, parser=None, columns=None):
+def keep(fileobj, adapter=None, columns=None):
     """
     Transform a list of headers and rows to keep specific values
     :param file_obj:    Open csv file handle
-    :option parser:     File parser, will default to standard CSV
+    :option adapter:    File adapter, will default to standard CSV
     :option columns:    CSV header columns to keep, default all
     :return tuple:      New header/rows
     """
     columns = columns if columns is not None else []
-    parser = parser if parser is not None else parsers.csv()
+    adapter = adapter if adapter is not None else adapters.csv()
 
-    header, rows = parser.read(fileobj)
+    header, rows = adapter.read(fileobj)
 
     keeps = helpers.indexes(header, columns)
 
@@ -82,34 +82,34 @@ def keep(fileobj, parser=None, columns=None):
 
     return mod_h, mod_r
 
-def summarize(fileobj, parser=None):
+def summarize(fileobj, adapter=None):
     """
     Summarize a table
     :param fileobj: Open file handle
-    :option parser: File parser, will default to CSV
+    :option adapter: File adapter, will default to CSV
     :return tuple: New header/rows
     """
-    _h, r_mean = fmap(fileobj, statistics.mean, parser=parser)
-    _h, r_mode = fmap(fileobj, statistics.mode, parser=parser)
-    _h, r_med = fmap(fileobj, statistics.median, parser=parser)
-    _h, r_sum = fmap(fileobj, sum, parser=parser)
+    _h, r_mean = fmap(fileobj, statistics.mean, adapter=adapter)
+    _h, r_mode = fmap(fileobj, statistics.mode, adapter=adapter)
+    _h, r_med = fmap(fileobj, statistics.median, adapter=adapter)
+    _h, r_sum = fmap(fileobj, sum, adapter=adapter)
 
     header = ['attribute'] + _h
     rows = [r_mean, r_mode, r_med, r_sum]
 
     return header, rows
 
-def tabulate(fileobj, parser=None, maxw=None, pad=0):
+def tabulate(fileobj, adapter=None, maxw=None, pad=0):
     """
     Format the table
     :param file_obj:    Open csv file handle
-    :param parser:      File parser, will default to standard CSV
+    :param adapter:     File adapter, will default to standard CSV
     :option maxw:       Max cell width
     :option pad:        Cell padding
     :return list:       Formatted table in matrix like form.
     """
-    parser = parser if parser is not None else parsers.csv('inparser')
-    header, rows = parser.read(fileobj)
+    adapter = adapter if adapter is not None else adapters.csv('inadapter')
+    header, rows = adapter.read(fileobj)
 
     full = list(rows)
     full.insert(0, header)

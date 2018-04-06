@@ -3,17 +3,17 @@
 #
 
 from __future__ import absolute_import
-from ..base import Parser
+from ..base import Adapter
 
 
-class TableParser(Parser):
+class TableAdapter(Adapter):
 
     def __init__(self, *args, **kwargs):
         """
         :option delimiter [str]: Column delimiter
         :option lineterminator [str]: Row delimiter
         """
-        super(TableParser, self).__init__(*args, **kwargs)
+        super(TableAdapter, self).__init__(*args, **kwargs)
 
         self.designation = 'outparser'
         self.delimiter = kwargs.get('delimiter', ' ')
@@ -24,9 +24,9 @@ class TableParser(Parser):
 
     def _set_argparser_options(self):
         """
-        Creates an ArgumentParser with the parser's allowed arguments.
+        Creates an ArgumentParser with the adapter's allowed arguments.
         """
-        super(TableParser, self)._set_argparser_options()
+        super(TableAdapter, self)._set_argparser_options()
 
         self._outparser.add_argument('-D', '--outfile-delim',
             nargs='?',

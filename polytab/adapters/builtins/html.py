@@ -3,10 +3,10 @@
 #
 
 from __future__ import absolute_import
-from ..base import Parser
+from ..base import Adapter
 
 
-class HTMLParser(Parser):
+class HTMLAdapter(Adapter):
     TEMPLATE = '<table>\n{}{}\n</table>\n'
     TAB_WIDTH = 4
 
@@ -14,7 +14,7 @@ class HTMLParser(Parser):
         """
         :option pretty [bool]: Make HTML human-readable
         """
-        super(HTMLParser, self).__init__(*args, **kwargs)
+        super(HTMLAdapter, self).__init__(*args, **kwargs)
 
         self.pretty = kwargs.get('pretty', getattr(self, 'pretty', False))
 
@@ -40,9 +40,9 @@ class HTMLParser(Parser):
 
     def _set_argparser_options(self):
         """
-        Creates an ArgumentParser with the parser's allowed arguments.
+        Creates an ArgumentParser with the adapters's allowed arguments.
         """
-        super(HTMLParser, self)._set_argparser_options()
+        super(HTMLAdapter, self)._set_argparser_options()
 
         self._outparser.add_argument('-P', '--outfile-pretty',
             action='store_true',

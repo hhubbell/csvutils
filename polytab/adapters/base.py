@@ -6,9 +6,9 @@ import argparse
 import sys
 
 
-class Parser(object):
+class Adapter(object):
     """
-    Base Parser class. Defines the the required methods and attributes.
+    Base Adapter class. Defines the the required methods and attributes.
     """
     READ_MODE = 'r'
     WRITE_MODE = 'w'
@@ -31,7 +31,7 @@ class Parser(object):
 
     def _set_argparser_options(self):
         """
-        Creates an ArgumentParser with the parser's allowed arguments.
+        Creates an ArgumentParser with the adapter's allowed arguments.
         """
         self._inparser = argparse.ArgumentParser()
         self._outparser = argparse.ArgumentParser()
@@ -50,7 +50,7 @@ class Parser(object):
     def parse_args(self, options):
         """
         Parse options with the argument parser.  All parsed options will
-        be available as attributes of the parser object.
+        be available as attributes of the adapter object.
         :param options [list]: Arguments to parse.
         """
         try:
@@ -61,7 +61,7 @@ class Parser(object):
                 setattr(self, key, value)
 
         except AttributeError:
-            raise NoParserDesignationError
+            raise NoAdapterDesignationError
 
     def read(self, *args, **kwargs):
         raise NotImplementedError
@@ -70,7 +70,7 @@ class Parser(object):
         raise NotImplementedError
 
 
-class NoParserDesignationError(Exception):
+class NoAdapterDesignationError(Exception):
 
     def __str__(self):
-        return 'Parser has no designation defined.'
+        return 'Adapter has no designation defined.'

@@ -3,7 +3,7 @@
 #
 
 from __future__ import absolute_import
-from . import polytab, parsers
+from . import polytab, adapters
 import argparse
 import csv
 import pkg_resources
@@ -20,8 +20,8 @@ def map(args, remainder):
     """
     Command line utility to map a function to a tabular file
     """
-    informat = getattr(parsers, args.informat)(designation='inparser')
-    outformat = getattr(parsers, args.outformat)(designation='outparser')
+    informat = getattr(adapters, args.informat)(designation='inparser')
+    outformat = getattr(adapters, args.outformat)(designation='outparser')
 
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
@@ -49,8 +49,8 @@ def convert(args, remainder):
     """
     Command line utility to convert one tabular format to another
     """
-    informat = getattr(parsers, args.informat)(designation='inparser')
-    outformat = getattr(parsers, args.outformat)(designation='outparser')
+    informat = getattr(adapters, args.informat)(designation='inparser')
+    outformat = getattr(adapters, args.outformat)(designation='outparser')
 
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
@@ -61,7 +61,7 @@ def drop(args, remainder):
     """
     Command line utility to drop columns from a tabular file
     """
-    informat = getattr(parsers, args.informat)(designation='inparser')
+    informat = getattr(adapters, args.informat)(designation='inparser')
     informat.parse_args(remainder)
 
     header, rows = polytab.drop(informat.file,
@@ -78,7 +78,7 @@ def keep(args, remainder):
     """
     Command line utiltiy to keep columns in a tabular file. The inverse of `drop`
     """
-    informat = getattr(parsers, args.informat)(designation='inparser')
+    informat = getattr(adapters, args.informat)(designation='inparser')
     informat.parse_args(remainder)
 
     header, rows = polytab.keep(informat.file,
@@ -111,8 +111,8 @@ def tab(args, remainder):
     """
     Command line utility to tabulate a csv file for easy viewing
     """
-    informat = getattr(parsers, args.informat)(designation='inparser')
-    outformat = parsers.table()
+    informat = getattr(adapters, args.informat)(designation='inparser')
+    outformat = adapters.table()
 
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
@@ -215,9 +215,9 @@ class CSVUtilsHelpAction(argparse.Action):
         if value is None:
             parser.print_help()
         else:
-            fileparser = getattr(parsers, value)()
-            fileparser._inparser.print_help()
-            fileparser._outparser.print_help()
+            fileadapter = getattr(adapters, value)()
+            fileadapter._inparser.print_help()
+            fileadapter._outparser.print_help()
 
         parser.exit()
 
