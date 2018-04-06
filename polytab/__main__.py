@@ -117,20 +117,23 @@ def main():
         nargs='?',
         action=CSVUtilsHelpAction,
         help='Show this help message and exit.')
-    parser.add_argument('-f', '--from',
-        dest='informat',
-        nargs='?',
-        default='csv',
-        help='Input file type. Default CSV.')
     parser.add_argument('-v', '--version',
         action='version',
         version=pkg_resources.get_distribution(__package__).version,
         help='Print version number and exit.')
 
-    subparsers = parser.add_subparsers() #dest='func')
+    # Input adapter argument handler
+    p_adapter = argparse.ArgumentParser(add_help=False)
+    p_adapter.add_argument('-f', '--from',
+        dest='informat',
+        nargs='?',
+        default='csv',
+        help='Input file type. Default CSV.')
+
+    subparsers = parser.add_subparsers()
 
     # polytab map
-    sp_fmap = subparsers.add_parser('map')
+    sp_fmap = subparsers.add_parser('map', parents=[p_adapter])
     sp_fmap.add_argument('function',
         choices=MAP_FUNCTIONS.keys(),
         help='Function to apply across all records of a column')
@@ -157,7 +160,7 @@ def main():
     sp_fmap.set_defaults(func=map)
 
     # polytab convert
-    sp_convert = subparsers.add_parser('convert')
+    sp_convert = subparsers.add_parser('convert', parents=[p_adapter])
     sp_convert.add_argument('-t', '--to',
         dest='outformat',
         nargs='?',
@@ -166,19 +169,19 @@ def main():
     sp_convert.set_defaults(func=convert)
 
     #polytab drop
-    sp_drop = subparsers.add_parser('drop')
+    sp_drop = subparsers.add_parser('drop', parents=[p_adapter])
     sp_drop.add_argument('-c', '--cols', nargs='*',
         help='A list of columns. Each column listed will be dropped.')
     sp_drop.set_defaults(func=drop)
 
     # polytab keep
-    sp_keep = subparsers.add_parser('keep')
+    sp_keep = subparsers.add_parser('keep', parents=[p_adapter])
     sp_keep.add_argument('-c', '--cols', nargs='*',
         help='A list of columns. Each column listed will be kept.')
     sp_keep.set_defaults(func=keep)
 
     # polytab tab
-    sp_tab = subparsers.add_parser('tab')
+    sp_tab = subparsers.add_parser('tab', parents=[p_adapter])
     sp_tab.set_defaults(func=tab)
  
     # Call subparser function
