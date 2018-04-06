@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import
 from ..base import Adapter
+from ... import helpers
 
 
 class TableAdapter(Adapter):
@@ -56,16 +57,42 @@ class TableAdapter(Adapter):
             help='The amount of padding to apply to a column (in spaces). ' \
                 'Default no padding.')
 
+    def tabulate(self, header, rows):
+        """
+        Format the table.
+        :param header:      Table header
+        :param rows:        Table rows
+        :return list:       Formatted table in matrix like form.
+        """
+        maxw = self.column_maxwidth
+        pad = self.padding
+
+        full = list(rows)
+        full.insert(0, header)
+        flat = zip(*full)
+        fmt = lambda s, w, a='<': '{:{}{}}'.format(s, a, w)
+        strnone = lambda x: str(x) if x is not None else None
+        fmtcol = []
+
+        for head, vals in zip(header, flat):
+            vals = [strnone(x) for x in vals]
+            calign = helpers.align(vals[1:])
+            cells = [len(x) for x in vals if x is not None]
+            cmax = max(cells) + pad if cells else 0
+            cmax = maxw if maxw is not None and maxw < cmax else cmax
+            fmtcol.append([fmt(helpers.trunc(x, cmax), cmax, calign) for x in vals])
+
+        return zip(*fmtcol)
+
     def write(self, fileobj):
         """
         Dump table to an open file handle
         :param fileobj [File]: File object to write to
         """
         try:
-            if self.hasheader is True and self.header is not None:
-                fileobj.write(self.delimiter.join(self.header) + self.lineterminator)
-
-            for row in self.rows:
+            # `self.tabulate()` returns the entire table body, so no need
+            # to format a header row (for now)
+            for row in self.tabulate(self.header, self.rows):
                 fileobj.write(self.delimiter.join(row) + self.lineterminator)
 
         except IOError:

@@ -101,12 +101,16 @@ def summarize(fileobj, adapter=None):
 
 def tabulate(fileobj, adapter=None, maxw=None, pad=0):
     """
-    Format the table
+    Format the table.
     :param file_obj:    Open csv file handle
     :param adapter:     File adapter, will default to standard CSV
     :option maxw:       Max cell width
     :option pad:        Cell padding
     :return list:       Formatted table in matrix like form.
+    :deprecated:        WARNING: This function has been moved to the
+                        `TableAdapter` class. To use the supported version,
+                        call `TableAdapter.tabulate()`. This is done
+                        automatically on `write()`.
     """
     adapter = adapter if adapter is not None else adapters.csv('inadapter')
     header, rows = adapter.read(fileobj)

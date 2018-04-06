@@ -28,7 +28,7 @@ def map(args, remainder):
 
     fn = MAP_FUNCTIONS[args.function]
     cols, avgs = zip(*polytab.fmap(informat.file, fn,
-        parser=informat,
+        adapter=informat,
         columns=args.cols))
 
     if args.precision:
@@ -65,7 +65,7 @@ def drop(args, remainder):
     informat.parse_args(remainder)
 
     header, rows = polytab.drop(informat.file,
-        parser=informat,
+        adapter=informat,
         columns=args.cols)
 
     informat.header = header
@@ -82,7 +82,7 @@ def keep(args, remainder):
     informat.parse_args(remainder)
 
     header, rows = polytab.keep(informat.file,
-        parser=informat,
+        adapter=informat,
         columns=args.cols)
 
     informat.header = header
@@ -117,10 +117,11 @@ def tab(args, remainder):
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
 
-    outformat.rows = polytab.tabulate(informat.file,
-        parser=informat,
-        maxw=outformat.column_maxwidth,
-        pad=outformat.padding)
+    # FIXME: This API stinks!
+    header, rows = informat.read(informat.file)
+
+    outformat.header = header
+    outformat.rows = rows
 
     outformat.write(outformat.file)
 
