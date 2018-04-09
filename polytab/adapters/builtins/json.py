@@ -13,6 +13,7 @@ class JSONAdapter(Adapter):
     def __init__(self, *args, **kwargs):
         """
         :option pretty [bool]: Make JSON human-readable
+        :option indent [int]: Override indentation width
         """
         super(JSONAdapter, self).__init__(*args, **kwargs)
 

@@ -10,33 +10,6 @@ from __future__ import division
 import decimal
 
 
-KEY_VALUE_STR_FORMAT = '{:<{}}{:>{}}'
-TAB_WIDTH = 4
-
-
-def align(values):
-    """
-    Determine alignment based on column datatype.
-    :param values:      Column values
-    :return string:     str.format microlanguage alignment character
-    """
-    try:
-        [float(x) for x in values if x is not None]
-        alg = '>'
-    except (ValueError, TypeError):
-        alg = '<'
-
-    return alg
-
-def avg(values):
-    """
-    Return the average of a list of numbers
-    :param values:      Iter of values
-    :return float:      Average of values
-    """
-    values = list(values)
-    return sum(values) / len(values)
-
 def ikeep(vals, indexes):
     """
     Inverse of imask
@@ -83,16 +56,3 @@ def tofloat(value):
         number = decimal.Decimal(0)
 
     return number
-
-def trunc(string, width, replace='...'):
-    """
-    Truncate a string if it exceeds the specified width, replacing
-    the truncated data with an ellipsis or other.
-    :param string:      String to truncate
-    :param width:       Max string length
-    :option replace:    Replace truncated data with
-    :return string:     New truncated string
-    """
-    string = '' if string is None else string
-
-    return string[:width - len(replace)] + replace if len(string) > width else string

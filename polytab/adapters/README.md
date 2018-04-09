@@ -42,5 +42,5 @@ setup(
 
 Now the adapter is available as part of the polytab library
 ```bash
-csvconvert -f csv -t myadapter file.csv
+polytab convert -f csv -t myadapter file.csv
 ```
