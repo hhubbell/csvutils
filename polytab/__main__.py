@@ -133,31 +133,31 @@ def main():
     subparsers = parser.add_subparsers()
 
     # polytab map
-    sp_fmap = subparsers.add_parser('map', parents=[p_adapter])
-    sp_fmap.add_argument('function',
+    sp_map = subparsers.add_parser('map', parents=[p_adapter])
+    sp_map.add_argument('function',
         choices=MAP_FUNCTIONS.keys(),
         help='Function to apply across all records of a column')
-    sp_fmap.add_argument('-c', '--cols', nargs='*',
+    sp_map.add_argument('-c', '--cols', nargs='*',
         help='A list of columns. Each column will have an average generated.')
-    sp_fmap.add_argument('-a', '--alphabetize',
+    sp_map.add_argument('-a', '--alphabetize',
         action='store_true',
         help='A flag to indicate the output should be displayed in ' \
             'alphabetical order. This argument is only valid if the output ' \
-            'is transposed. Equivalent to `csvavg ... -T | sort`.')
-    sp_fmap.add_argument('-p', '--precision',
+            'is transposed. Equivalent to piping to sort without any args.')
+    sp_map.add_argument('-p', '--precision',
         type=int,
         help='The number of decimal places to show.')
-    sp_fmap.add_argument('-t', '--to',
+    sp_map.add_argument('-t', '--to',
         dest='outformat',
         nargs='?',
         default='csv',
         help='Output file type. Default CSV.')
-    sp_fmap.add_argument('-T', '--transpose',
+    sp_map.add_argument('-T', '--transpose',
         action='store_true',
         help='A flag to indicate the output should be transposed so that ' \
             'there are two columns and N rows, where N equals the number ' \
             'of columns indicated to average.')
-    sp_fmap.set_defaults(func=map)
+    sp_map.set_defaults(func=map)
 
     # polytab convert
     sp_convert = subparsers.add_parser('convert', parents=[p_adapter])

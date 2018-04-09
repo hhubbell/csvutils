@@ -42,5 +42,5 @@ setup(
 
 Now the parser is available as part of the polytab library
 ```bash
-csvconvert -f csv -t myparser file.csv
+polytab convert -f csv -t myparser file.csv
 ```

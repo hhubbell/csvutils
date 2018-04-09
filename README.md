@@ -1,101 +1,129 @@
 # Polytab
 
-A group of utilities for exploring and manipulating csv files.
+Manipulate tabular files from the command line
 
-## Command Line Utilities
-#### csvavg
+## Utilities
+#### polytab map
+Apply a function on columns of a table and send the result to a file. By
+default this is stdout. Optionally, tabulate and alphabetize output.
 ```bash
-usage: csvavg [-h] [-a] [-d [INFILE_DELIM]] [-D [OUTFILE_DELIM]]
-              [-p PRECISION] [-t]
-              [infile] ...
+usage: polytab map [-h] [-f [INFORMAT]] [-c [COLS [COLS ...]]] [-a]
+                   [-p PRECISION] [-t [OUTFORMAT]] [-T]
+                   {mean,sum} ...
+
+positional arguments:
+  {mean,sum}            Function to apply across all records of a column
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f [INFORMAT], --from [INFORMAT]
+                        Input file type. Default CSV.
+  -c [COLS [COLS ...]], --cols [COLS [COLS ...]]
+                        A list of columns. Each column will have an average
+                        generated.
+  -a, --alphabetize     A flag to indicate the output should be displayed in
+                        alphabetical order. This argument is only valid if the
+                        output is transposed. Equivalent to piping to sort
+                        without any args.
+  -p PRECISION, --precision PRECISION
+                        The number of decimal places to show.
+  -t [OUTFORMAT], --to [OUTFORMAT]
+                        Output file type. Default CSV.
+  -T, --transpose       A flag to indicate the output should be transposed so
+                        that there are two columns and N rows, where N equals
+                        the number of columns indicated to average.
 ```
 
-Average columns of a csv and print the result to stdout. Optionally,
-tabulate and alphabetize output.
+Example use:
 ```bash
-$ csvavg file.csv Margin%
+$ polytab map avg my_file.csv margin_pct
 Margin%: .35
 ```
 
-#### csvdrop
+#### polytab drop
+Drop columns from a table and send the result to a new file. By default this
+is stdout.
 ```bash
-usage: csvdrop [-h] [-d DELIM] [infile] cols [cols ...]
+usage: polytab drop [-h] [-f [INFORMAT]] [-c [COLS [COLS ...]]] ...
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f [INFORMAT], --from [INFORMAT]
+                        Input file type. Default CSV.
+  -c [COLS [COLS ...]], --cols [COLS [COLS ...]]
+                        A list of columns. Each column listed will be dropped.
 ```
 
-Drop columns from a csv and print the result to stdout.  This can be useful
-for comparing a file before and after a change is made, if the change includes
-adding a new files.  For example, the result of a SQL query:
+Example use:
 ```bash
-$ psql dbname -c "COPY (`cat before.sql`) TO STDOUT WITH CSV HEADER" > before.csv
-$ psql dbname -c "COPY (`cat after.sql`) TO STDOUT WITH CSV HEADER" > after.csv
-$ diff <(sort before.csv) <(csvdrop after.csv NewColumn1 | sort)
+polytab drop my_file.csv -c margin_pct margin_dollar
 ```
 
-#### csvkeep
+#### polytab keep
+The opposite of `polytab drop`; keeps only the columns listed.
 ```bash
-usage: csvkeep [-h] [-d DELIM] [infile] cols [cols ...]
+usage: polytab keep [-h] [-f [INFORMAT]] [-c [COLS [COLS ...]]] ...
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f [INFORMAT], --from [INFORMAT]
+                        Input file type. Default CSV.
+  -c [COLS [COLS ...]], --cols [COLS [COLS ...]]
+                        A list of columns. Each column listed will be kept.
 ```
 
-The opposite of `csvdrop`; keep only the columns listed.
+Example use:
 ```bash
-$ csvkeep file.csv name
-name
-Joe
-Larry
-Kim
+$ polytab keep my_file.csv -c name
 ```
 
-#### csvsum
+#### polytab tab
+Format a tabular file for printing evenly distributed columns.
 ```bash
-usage: csvsum [-h] [-a] [-d [INFILE_DELIM]] [-D [OUTFILE_DELIM]]
-              [-p PRECISION] [-t]
-              [infile] ...
+usage: polytab tab [-h] [-f [INFORMAT]]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f [INFORMAT], --from [INFORMAT]
+                        Input file type. Default CSV.
 ```
 
-Sum columns of a csv and print the result to stdout.  Optionally,
-tabulate and alphabetize output.
+Example use:
 ```bash
-$ csvsum file.csv Subtotal Tax Margin
-Subtotal: 1000000
-Tax: 40000
-Margin: 600000
-
-$ csvsum -t file.csv Subtotal Tax Margin
-Subtotal: 1000000
-Tax:        40000
-Margin:    600000
-```
-
-#### csvtab
-```bash
-usage: csvtab [-h] [-d DELIM] [-m MAXLENGTH] [-p PADDING] [infile]
-```
-
-Tabulate a csv file for easier viewing and print result to stdout.
-```bash
-$ csvtab file.csv
+$ polytab tab file.csv
 name    salary title
 John 100000.00 Boss
 Jim   88000.00 Peon
 Tim    7600.00 Intern
 
-$ csvtab file.csv -m 6
+$ polytab tab file.csv -m 6
 name salary title
 John 100... Boss
 Jim  880... Peon
 Tim  760... Intern
 ```
 
-#### csvtohtml
+#### polytab convert
+Transform a tabular file of one type to another. Great for formatting stuff in a pipeline.
 ```bash
-usage: csvtohtml [-h] [-d [DELIM]] [-N] [-p] [infile]
+usage: polytab convert [-h] [-f [INFORMAT]] [-t [OUTFORMAT]]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f [INFORMAT], --from [INFORMAT]
+                        Input file type. Default CSV.
+  -t [OUTFORMAT], --to [OUTFORMAT]
+                        Output file type. Default CSV.
 ```
 
-Transform a csv into an html table. Great for formatting stuff in a pipeline.
+Example use:
 ```bash
-$ csvtohtml file.csv > table.html
+$ polytab convert -f csv -t html file.csv > table.html
 
-$ mysql < sales.sql | csvtohtml -d "\t" | pandoc -s -H company_style.css | bcat  # bcat is awesome
+$ mysql < sales.sql \
+    | polytab convert -d "\t" -t html \
+    | pandoc -s -H company_style.css \
+    | bcat  # bcat is awesome
 ```
 
 ## Python Library
