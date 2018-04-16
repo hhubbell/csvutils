@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import
 from ..base import Adapter
+from ...common_table import CommonTable
 import csv
 
 
@@ -98,10 +99,9 @@ class CSVAdapter(Adapter):
         if head is None:
             head = self._generic_header(len(rows[0]))
 
-        self.header = head
-        self.rows = rows
+        self.data = CommonTable(head, rows)
 
-        return head, rows
+        return self.data
 
     def write(self, fileobj):
         """
@@ -114,10 +114,10 @@ class CSVAdapter(Adapter):
                 lineterminator=self.lineterminator,
                 quoting=self.quoting)
             
-            if self.header is not None and self.hasheader is not False:
-                writer.writerow(self.header)
+            if self.data.header is not None and self.hasheader is not False:
+                writer.writerow(self.data.header)
 
-            writer.writerows(self.rows)
+            writer.writerows(self.data.rows)
 
         except IOError:
             fileobj.close()

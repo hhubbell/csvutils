@@ -20,7 +20,7 @@ class MyAdapter(base.Adapter):
         """
         Prefix each row with a number
         """
-        for i, row in enumerate(self.rows):
+        for i, row in enumerate(self.data):
             fileobj.write(str(i) + ' ' + ' '.join(row) + '\n')
 
 ```

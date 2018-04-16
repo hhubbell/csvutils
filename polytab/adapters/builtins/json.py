@@ -45,6 +45,6 @@ class JSONAdapter(Adapter):
         :param fileobj [File]: File object to write to
         """
         indent = self.indent if self.pretty else None
-        obj = [{k: v for k, v in zip(self.header, row)} for row in self.rows]
+        obj = [{k: v for k, v in zip(self.data.header, row)} for row in self.data.rows]
 
         json.dump(obj, fileobj, indent=indent, sort_keys=self.pretty)

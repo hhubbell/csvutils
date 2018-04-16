@@ -54,7 +54,7 @@ class HTMLAdapter(Adapter):
         Dump a html table to an open file handle
         :param fileobj [File]: File object to write to
         """
-        h = self._htmlrow(self.header, header=True, tabs=self.pretty) + '\n' if self.header else ''
-        r = (self._htmlrow(x, tabs=self.pretty) for x in self.rows)
+        h = self._htmlrow(self.data.header, header=True, tabs=self.pretty) + '\n' if self.data.header else ''
+        r = (self._htmlrow(x, tabs=self.pretty) for x in self.data.rows)
 
         fileobj.write(self.TEMPLATE.format(h, '\n'.join(r)))

@@ -1,6 +1,18 @@
 #
 # base.py
 #
+# Define the abstract Adapter class. This class provides scaffolding for the
+# minimum viable adapter object. All adapters must provide either a `read`
+# or a `write` method. In practice neither `read` nor `write` need to provide
+# any local file I/O; its possible for instance that `write` pushes a stream
+# of data to an external URI.
+#
+# adapter.read must return an iterable in a matrix like structure. The
+# CommonTable class provides this abstraction.
+#
+# adapter.write must accept an iterable in matrix form as one of its
+# arguments. The CommonTable class provides this abstraction.
+#
 
 import argparse
 import sys
@@ -8,14 +20,13 @@ import sys
 
 class Adapter(object):
     """
-    Base Adapter class. Defines the the required methods and attributes.
+    Base Adapter class. Defines the required method and attribute scaffolding.
     """
     READ_MODE = 'r'
     WRITE_MODE = 'w'
 
     def __init__(self, *args, **kwargs):
-        self.header = None
-        self.rows = None
+        self.data = None
         self.designation = kwargs.get('designation')
         self._set_argparser_options()
 

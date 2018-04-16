@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import
 from ..base import Adapter
+from ...common_table import CommonTable
 
 
 class TableAdapter(Adapter):
@@ -73,7 +74,7 @@ class TableAdapter(Adapter):
 
         return alg
 
-    def _trunc(string, width, replace='...'):
+    def _trunc(self, string, width, replace='...'):
         """
         Truncate a string if it exceeds the specified width, replacing
         the truncated data with an ellipsis or other.
@@ -86,24 +87,20 @@ class TableAdapter(Adapter):
 
         return string[:width - len(replace)] + replace if len(string) > width else string
 
-    def tabulate(self, header, rows):
+    def tabulate(self, iterable):
         """
         Format the table.
-        :param header [itr]: Table header
-        :param rows [itr]: Table rows
+        :param iterable [itr]: Table like data
         :return [list]: Formatted table in matrix like form.
         """
         maxw = self.column_maxwidth
         pad = self.padding
 
-        full = list(rows)
-        full.insert(0, header)
-        flat = zip(*full)
         fmt = lambda s, w, a='<': '{:{}{}}'.format(s, a, w)
         strnone = lambda x: str(x) if x is not None else None
         fmtcol = []
 
-        for head, vals in zip(header, flat):
+        for vals in zip(*list(iterable)):
             vals = [strnone(x) for x in vals]
             calign = self._align(vals[1:])
             cells = [len(x) for x in vals if x is not None]
@@ -111,6 +108,7 @@ class TableAdapter(Adapter):
             cmax = maxw if maxw is not None and maxw < cmax else cmax
             fmtcol.append([fmt(self._trunc(x, cmax), cmax, calign) for x in vals])
 
+        # FIXME: Return CommonTable
         return zip(*fmtcol)
 
     def write(self, fileobj):
@@ -121,7 +119,7 @@ class TableAdapter(Adapter):
         try:
             # `self.tabulate()` returns the entire table body, so no need
             # to format a header row (for now)
-            for row in self.tabulate(self.header, self.rows):
+            for row in self.tabulate(self.data):
                 fileobj.write(self.delimiter.join(row) + self.lineterminator)
 
         except IOError:

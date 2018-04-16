@@ -19,6 +19,8 @@ MAP_FUNCTIONS = {
 def map(args, remainder):
     """
     Command line utility to map a function to a tabular file
+
+    XXX: Broken with new CommonTable abstraction
     """
     informat = getattr(adapters, args.informat)(designation='inparser')
     outformat = getattr(adapters, args.outformat)(designation='outparser')
@@ -64,12 +66,11 @@ def drop(args, remainder):
     informat = getattr(adapters, args.informat)(designation='inparser')
     informat.parse_args(remainder)
 
-    header, rows = polytab.drop(informat.file,
+    data = polytab.drop(informat.file,
         adapter=informat,
         columns=args.cols)
 
-    informat.header = header
-    informat.rows = rows
+    informat.data = data
     informat.designation = 'outparser'
     informat.parse_args(remainder)
     informat.write(informat.file)
@@ -81,12 +82,11 @@ def keep(args, remainder):
     informat = getattr(adapters, args.informat)(designation='inparser')
     informat.parse_args(remainder)
 
-    header, rows = polytab.keep(informat.file,
+    data = polytab.keep(informat.file,
         adapter=informat,
         columns=args.cols)
 
-    informat.header = header
-    informat.rows = rows
+    informat.data
     informat.designation = 'outparser'
     informat.parse_args(remainder)
     informat.write(informat.file)
@@ -118,11 +118,7 @@ def tab(args, remainder):
     outformat.parse_args(remainder)
 
     # FIXME: This API stinks!
-    header, rows = informat.read(informat.file)
-
-    outformat.header = header
-    outformat.rows = rows
-
+    outformat.data = informat.read(informat.file)
     outformat.write(outformat.file)
 
 def main():

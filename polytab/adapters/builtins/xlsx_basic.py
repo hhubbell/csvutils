@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import
 from ..base import Adapter
+from ...common_table import CommonTable
 import datetime
 import functools
 import zipfile
@@ -241,7 +242,7 @@ class XLSXAdapter(Adapter):
         rows = [self._parse_row(x) for x in table if self._in_range(x)]
         header = rows.pop(0)
 
-        return header, rows
+        return CommonTable(header, rows)
 
     # XXX Not yet supported
     #def write(self, fileobj):

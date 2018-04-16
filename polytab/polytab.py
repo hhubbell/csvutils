@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import
 from . import helpers, adapters
+from .common_table import CommonTable
 import statistics
 
 
@@ -14,9 +15,7 @@ def convert(fileobj, informat, outformat):
     :param informat:        Parser object for importing file
     :param outformat:       Parser object for exporting file
     """
-    header, rows = informat.read(fileobj)
-    outformat.header = header
-    outformat.rows = rows
+    outformat.data = informat.read(fileobj)
 
     return outformat
 
@@ -32,15 +31,15 @@ def fmap(fileobj, func, adapter=None, columns=None):
     columns = columns if columns is not None else []
     adapter = adapter if adapter is not None else adapters.csv()
 
-    header, rows = adapter.read(fileobj)
+    data = adapter.read(fileobj)
 
-    to_app = helpers.indexes(header, columns)
+    to_app = helpers.indexes(data.header, columns)
     res = []
 
     for index in to_app:
-        res.append(func(helpers.tofloat(x[index]) for x in rows))
+        res.append(func(helpers.tofloat(x[index]) for x in data.rows))
 
-    return zip(helpers.ikeep(header, to_app), res)
+    return zip(helpers.ikeep(data.header, to_app), res)
 
 def drop(fileobj, adapter=None, columns=None):
     """
@@ -53,14 +52,14 @@ def drop(fileobj, adapter=None, columns=None):
     columns = columns if columns is not None else []
     adapter = adapter if adapter is not None else adapters.csv()
 
-    header, rows = adapter.read(fileobj)
+    data = adapter.read(fileobj)
 
-    drops = helpers.indexes(header, columns)
+    drops = helpers.indexes(data.header, columns)
 
-    mod_h = helpers.imask(header, drops)
-    mod_r = [helpers.imask(x, drops) for x in rows]
+    mod_h = helpers.imask(data.header, drops)
+    mod_r = [helpers.imask(x, drops) for x in data.rows]
 
-    return mod_h, mod_r
+    return CommonTable(mod_h, mod_r)
 
 def keep(fileobj, adapter=None, columns=None):
     """
@@ -73,14 +72,14 @@ def keep(fileobj, adapter=None, columns=None):
     columns = columns if columns is not None else []
     adapter = adapter if adapter is not None else adapters.csv()
 
-    header, rows = adapter.read(fileobj)
+    data = adapter.read(fileobj)
 
-    keeps = helpers.indexes(header, columns)
+    keeps = helpers.indexes(data.header, columns)
 
-    mod_h = helpers.ikeep(header, keeps)
-    mod_r = [helpers.ikeep(x, keeps) for x in rows]
+    mod_h = helpers.ikeep(data.header, keeps)
+    mod_r = [helpers.ikeep(x, keeps) for x in data.rows]
 
-    return mod_h, mod_r
+    return CommonTable(mod_h, mod_r)
 
 def summarize(fileobj, adapter=None):
     """
@@ -97,7 +96,7 @@ def summarize(fileobj, adapter=None):
     header = ['attribute'] + _h
     rows = [r_mean, r_mode, r_med, r_sum]
 
-    return header, rows
+    return CommonTable(header, rows)
 
 def tabulate(fileobj, adapter=None, maxw=None, pad=0):
     """
