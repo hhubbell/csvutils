@@ -91,7 +91,7 @@ def keep(args, remainder):
     informat.parse_args(remainder)
     informat.write(informat.file)
 
-def summarize(srgs, remainder):
+def summarize(args, remainder):
     """
     Command line utility to summarize a tabular file.
     """

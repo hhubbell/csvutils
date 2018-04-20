@@ -3,7 +3,7 @@
 #
 
 from __future__ import absolute_import
-from . import helpers, parsers
+from . import helpers, adapters
 import statistics
 
 
