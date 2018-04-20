@@ -29,22 +29,25 @@ def map(args, remainder):
     outformat.parse_args(remainder)
 
     fn = MAP_FUNCTIONS[args.function]
-    cols, avgs = zip(*polytab.fmap(informat.file, fn,
+    data = polytab.fmap(informat.file, fn,
         adapter=informat,
-        columns=args.cols))
+        columns=args.cols)
 
-    if args.precision:
-        avgs = ['{:.{}f}'.format(x, args.precision) for x in avgs]
+    # FIXME: Disable for now until type checker
+    #if args.precision:
+    #    avgs = ['{:.{}f}'.format(x, args.precision) for x in avgs]
 
-    if args.transpose is True:
-        if args.alphabetize is True:
-            outformat.rows = sorted(zip(cols, avgs), key=lambda x: x[0])
-        else:
-            outformat.rows = zip(cols, avgs)
-    else:
-        outformat.header = cols
-        outformat.rows = [avgs]
+    # FIXME: Disable for now
+    #if args.transpose is True:
+    #    if args.alphabetize is True:
+    #        outformat.rows = sorted(zip(cols, avgs), key=lambda x: x[0])
+    #    else:
+    #        outformat.rows = zip(cols, avgs)
+    #else:
+    #    outformat.header = cols
+    #    outformat.rows = [avgs]
 
+    outformat.data = data
     outformat.write(outformat.file)
 
 def convert(args, remainder):
@@ -86,7 +89,7 @@ def keep(args, remainder):
         adapter=informat,
         columns=args.cols)
 
-    informat.data
+    informat.data = data
     informat.designation = 'outparser'
     informat.parse_args(remainder)
     informat.write(informat.file)
@@ -109,7 +112,7 @@ def summarize(args, remainder):
 
 def tab(args, remainder):
     """
-    Command line utility to tabulate a csv file for easy viewing
+    Command line utility to tabulate a tabular file for easy viewing
     """
     informat = getattr(adapters, args.informat)(designation='inparser')
     outformat = adapters.table()
@@ -146,30 +149,31 @@ def main():
     subparsers = parser.add_subparsers()
 
     # polytab map
+    # FIXME: Some options disabled until API consistency issues are resolved
     sp_map = subparsers.add_parser('map', parents=[p_adapter])
     sp_map.add_argument('function',
         choices=MAP_FUNCTIONS.keys(),
         help='Function to apply across all records of a column')
     sp_map.add_argument('-c', '--cols', nargs='*',
         help='A list of columns. Each column will have an average generated.')
-    sp_map.add_argument('-a', '--alphabetize',
-        action='store_true',
-        help='A flag to indicate the output should be displayed in ' \
-            'alphabetical order. This argument is only valid if the output ' \
-            'is transposed. Equivalent to piping to sort without any args.')
-    sp_map.add_argument('-p', '--precision',
-        type=int,
-        help='The number of decimal places to show.')
+    #sp_map.add_argument('-a', '--alphabetize',
+    #    action='store_true',
+    #    help='A flag to indicate the output should be displayed in ' \
+    #        'alphabetical order. This argument is only valid if the output ' \
+    #        'is transposed. Equivalent to piping to sort without any args.')
+    #sp_map.add_argument('-p', '--precision',
+    #    type=int,
+    #    help='The number of decimal places to show.')
     sp_map.add_argument('-t', '--to',
         dest='outformat',
         nargs='?',
         default='csv',
         help='Output file type. Default CSV.')
-    sp_map.add_argument('-T', '--transpose',
-        action='store_true',
-        help='A flag to indicate the output should be transposed so that ' \
-            'there are two columns and N rows, where N equals the number ' \
-            'of columns indicated to average.')
+    #sp_map.add_argument('-T', '--transpose',
+    #    action='store_true',
+    #    help='A flag to indicate the output should be transposed so that ' \
+    #        'there are two columns and N rows, where N equals the number ' \
+    #        'of columns indicated to average.')
     sp_map.set_defaults(func=map)
 
     # polytab convert

@@ -28,18 +28,13 @@ def fmap(fileobj, func, adapter=None, columns=None):
     :option columns:    CSV header columns to average, default all
     :return list:       List of column: result tuples
     """
-    columns = columns if columns is not None else []
-    adapter = adapter if adapter is not None else adapters.csv()
+    data = keep(fileobj, adapter, columns)
 
-    data = adapter.read(fileobj)
-
-    to_app = helpers.indexes(data.header, columns)
     res = []
-
-    for index in to_app:
+    for index in range(len(data.header)):
         res.append(func(helpers.tofloat(x[index]) for x in data.rows))
 
-    return zip(helpers.ikeep(data.header, to_app), res)
+    return CommonTable(data.header, [res])
 
 def drop(fileobj, adapter=None, columns=None):
     """
