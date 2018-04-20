@@ -91,6 +91,22 @@ def keep(args, remainder):
     informat.parse_args(remainder)
     informat.write(informat.file)
 
+def summarize(srgs, remainder):
+    """
+    Command line utility to summarize a tabular file.
+    """
+    informat = getattr(parsers, args.informat)(designation='inparser')
+    outformat = getattr(parsers, args.outformat)(designation='outparser')
+
+    informat.parse_args(remainder)
+    outformat.parse_args(remainder)
+
+    header, rows = polytab.summarize(informat.file, parser=informat)
+    
+    outformat.header = header
+    outformat.rows = rows
+    outformat.write(outformat.file)
+
 def tab(args, remainder):
     """
     Command line utility to tabulate a csv file for easy viewing
@@ -179,6 +195,10 @@ def main():
     sp_keep.add_argument('-c', '--cols', nargs='*',
         help='A list of columns. Each column listed will be kept.')
     sp_keep.set_defaults(func=keep)
+
+    # polytab summarize
+    sp_summarize = subparsers.add_parser('summarize', parents=[p_adapter])
+    sp_summarize.set_defaults(func=summarize)
 
     # polytab tab
     sp_tab = subparsers.add_parser('tab', parents=[p_adapter])

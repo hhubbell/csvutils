@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import
 from . import helpers, parsers
+import statistics
 
 
 def convert(fileobj, informat, outformat):
@@ -80,6 +81,23 @@ def keep(fileobj, parser=None, columns=None):
     mod_r = [helpers.ikeep(x, keeps) for x in rows]
 
     return mod_h, mod_r
+
+def summarize(fileobj, parser=None):
+    """
+    Summarize a table
+    :param fileobj: Open file handle
+    :option parser: File parser, will default to CSV
+    :return tuple: New header/rows
+    """
+    _h, r_mean = fmap(fileobj, statistics.mean, parser=parser)
+    _h, r_mode = fmap(fileobj, statistics.mode, parser=parser)
+    _h, r_med = fmap(fileobj, statistics.median, parser=parser)
+    _h, r_sum = fmap(fileobj, sum, parser=parser)
+
+    header = ['attribute'] + _h
+    rows = [r_mean, r_mode, r_med, r_sum]
+
+    return header, rows
 
 def tabulate(fileobj, parser=None, maxw=None, pad=0):
     """
