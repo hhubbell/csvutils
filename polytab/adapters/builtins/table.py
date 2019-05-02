@@ -3,11 +3,32 @@
 #
 
 from __future__ import absolute_import
-from ..base import Adapter
+from ..base import Writer, AdapterMethodNotSupportedError
 from ...common_table import CommonTable
 
 
-class TableAdapter(Adapter):
+def adapter(method, *args, **kwargs):
+    """
+    Takes a string adapter method name (`writer`) and returns the appropriate
+    adapter class. This method exists primarily to support dynamic arguments
+    passed at the command line. Users that want to use a `TableWriter`
+    adapter should do so directly. A `reader` argument as no support timeline.
+    :param method [str]: Adapter method
+    :return [object]: Initialized adapter object
+    """
+    if method == 'reader':
+        # NOTE: TableReader will never be supported because it is a
+        # space-delimited output format used for the `tab` method only.
+        raise AdapterMethodNotSupportedError(method)
+    elif method == 'writer':
+        adapt = TableWriter()
+    else:
+        raise AdapterMethodNotSupportedError(method)
+
+    return adapt
+
+
+class TableWriter(Writer):
 
     def __init__(self, *args, **kwargs):
         """
@@ -17,7 +38,7 @@ class TableAdapter(Adapter):
         :option lineterminator [str]: Row delimiter
         :option padding [int]: Additional padding to apply to each cell
         """
-        super(TableAdapter, self).__init__(*args, **kwargs)
+        super(TableWriter, self).__init__(*args, **kwargs)
 
         self.designation = 'outparser'
         self.column_maxwidth = kwargs.get('column_maxwidth')
@@ -30,29 +51,29 @@ class TableAdapter(Adapter):
         """
         Creates an ArgumentParser with the adapter's allowed arguments.
         """
-        super(TableAdapter, self)._set_argparser_options()
+        super(TableWriter, self)._set_argparser_options()
 
-        self._outparser.add_argument('-D', '--outfile-delim',
+        self._parser.add_argument('-D', '--outfile-delim',
             nargs='?',
             default=' ',
             dest='delimiter',
             help='Output delimiter. Default space')
-        self._outparser.add_argument('--outfile-no-header',
+        self._parser.add_argument('--outfile-no-header',
             action='store_false',
             dest='hasheader',
             help='A flag to indicate the output does not have a header ' \
                 'that should be displayed.')
-        self._outparser.add_argument('--outfile-lineterminator',
+        self._parser.add_argument('--outfile-lineterminator',
             nargs='?',
             default='\n',
             dest='lineterminator',
             help='Output line terminator. Default newline character.')
-        self._outparser.add_argument('--outfile-column-maxwidth',
+        self._parser.add_argument('--outfile-column-maxwidth',
             type=int,
             dest='column_maxwidth',
             help='The max width of a column. Values that have a width ' \
                 'exceeding this number will be truncated.')
-        self._outparser.add_argument('--outfile-padding',
+        self._parser.add_argument('--outfile-padding',
             nargs='?',
             type=int,
             default=0,

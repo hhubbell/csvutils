@@ -24,8 +24,8 @@ setup(
             'csvsum=polytab.cli:csvsum',
             'csvtab=polytab.cli:csvtab'],
         'polytab.adapters': [
-            'csv=polytab.adapters.builtins.csv:CSVAdapter',
-            'html=polytab.adapters.builtins.html:HTMLAdapter',
-            'json=polytab.adapters.builtins.json:JSONAdapter',
-            'table=polytab.adapters.builtins.table:TableAdapter',
-            'xlsx_basic=polytab.adapters.builtins.xlsx_basic:XLSXAdapter']})
+            'csv=polytab.adapters.builtins.csv:adapter',
+            'html=polytab.adapters.builtins.html:adapter',
+            'json=polytab.adapters.builtins.json:adapter',
+            'table=polytab.adapters.builtins.table:adapter',
+            'xlsx_basic=polytab.adapters.builtins.xlsx_basic:adapter']})

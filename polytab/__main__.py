@@ -22,15 +22,16 @@ def map(args, remainder):
 
     XXX: Broken with new CommonTable abstraction
     """
-    informat = getattr(adapters, args.informat)(designation='inparser')
-    outformat = getattr(adapters, args.outformat)(designation='outparser')
+    reader = getattr(adapters, args.informat)('reader')
+    writer = getattr(adapters, args.outformat)('writer')
 
-    informat.parse_args(remainder)
-    outformat.parse_args(remainder)
+    reader.parse_args(remainder)
+    writer.parse_args(remainder)
 
+    # Would be cool to do this in the `coupler` pipeline
     fn = MAP_FUNCTIONS[args.function]
     data = polytab.fmap(informat.file, fn,
-        adapter=informat,
+        adapter=reader,
         columns=args.cols)
 
     # FIXME: Disable for now until type checker
@@ -47,82 +48,91 @@ def map(args, remainder):
     #    outformat.header = cols
     #    outformat.rows = [avgs]
 
-    outformat.data = data
-    outformat.write(outformat.file)
+    # FIXME
+    writer.data = data
+    writer.write(writer.file)
 
 def convert(args, remainder):
     """
     Command line utility to convert one tabular format to another
     """
-    informat = getattr(adapters, args.informat)(designation='inparser')
-    outformat = getattr(adapters, args.outformat)(designation='outparser')
+    reader = getattr(adapters, args.informat)('reader')
+    writer = getattr(adapters, args.outformat)('writer')
 
-    informat.parse_args(remainder)
-    outformat.parse_args(remainder)
+    reader.parse_args(remainder)
+    writer.parse_args(remainder)
 
-    outformat.receive(informat)
-    outformat.write(outformat.file)
+    with polytab.coupler(reader, writer) as cpl:
+        cpl.write(writer.file)
 
 def drop(args, remainder):
     """
     Command line utility to drop columns from a tabular file
     """
-    informat = getattr(adapters, args.informat)(designation='inparser')
-    informat.parse_args(remainder)
+    reader = getattr(adapters, args.informat)('reader')
+    writer = getattr(adapters, args.informat)('writer')
 
+    reader.parse_args(remainder)
+    writer.parse_args(remainder)
+
+    # Would be cool to do this in the `coupler` pipeline
     data = polytab.drop(informat.file,
         adapter=informat,
         columns=args.cols)
 
-    informat.data = data
-    informat.designation = 'outparser'
-    informat.parse_args(remainder)
-    informat.write(informat.file)
+    with polytab.coupler(reader, writer) as cpl:
+        # FIXME
+        cpl.write(writer.file)
 
 def keep(args, remainder):
     """
     Command line utiltiy to keep columns in a tabular file. The inverse of `drop`
     """
-    informat = getattr(adapters, args.informat)(designation='inparser')
-    informat.parse_args(remainder)
+    reader = getattr(adapters, args.informat)('reader')
+    writer = getattr(adapters, args.informat)('writer')
 
-    data = polytab.keep(informat.file,
+    reader.parse_args(remainder)
+    writer.parse_args(remainder)
+
+    # Would be cool to do this in the `coupler` pipeline
+    data = polytab.keep(reader.file,
         adapter=informat,
         columns=args.cols)
 
-    informat.data = data
-    informat.designation = 'outparser'
-    informat.parse_args(remainder)
-    informat.write(informat.file)
+    with polytab.coupler(reader, writer) as cpl:
+        # FIXME
+        cpl.write(writer.file)
 
 def summarize(args, remainder):
     """
     Command line utility to summarize a tabular file.
     """
-    informat = getattr(adapters, args.informat)(designation='inparser')
-    outformat = getattr(adapters, args.outformat)(designation='outparser')
+    reader = getattr(adapters, args.informat)('reader')
+    writer = getattr(adapters, args.outformat)('writer')
 
-    informat.parse_args(remainder)
-    outformat.parse_args(remainder)
+    reader.parse_args(remainder)
+    writer.parse_args(remainder)
 
-    data = polytab.summarize(informat.file, adapter=informat)
+    # would be cool to do this in the `coupler` pipeline
+    data = polytab.summarize(reader.file, adapter=reader)
     
-    outformat.data = data
-    outformat.write(outformat.file)
+    with polytab.coupler(reader, writer) as cpl:
+        # FIXME
+        cpl.write(writer.file)
 
 def tab(args, remainder):
     """
     Command line utility to tabulate a tabular file for easy viewing
     """
-    informat = getattr(adapters, args.informat)(designation='inparser')
-    outformat = adapters.table()
+    reader = getattr(adapters, args.informat)('reader')
+    writer = adapters.table('writer')
 
-    informat.parse_args(remainder)
-    outformat.parse_args(remainder)
+    reader.parse_args(remainder)
+    writer.parse_args(remainder)
 
-    # FIXME: This API stinks!
-    outformat.data = informat.read(informat.file)
-    outformat.write(outformat.file)
+    with polytab.coupler(reader, writer) as cpl:
+        # FIXME
+        cpl.write(writer.file)
 
 def main():
     """

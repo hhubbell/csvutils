@@ -3,10 +3,19 @@
 #
 
 from __future__ import absolute_import
+from contextlib import contextmanager
 from . import helpers, adapters
 from .common_table import CommonTable
 import statistics
 
+
+@contextmanager
+def coupler(reader, writer):
+    """
+    Define a coupler pipeline MVP
+    """
+    writer.data = reader.read(reader.file)
+    yield writer
 
 def fmap(fileobj, func, adapter=None, columns=None):
     """
