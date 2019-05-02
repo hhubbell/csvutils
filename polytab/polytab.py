@@ -8,17 +8,6 @@ from .common_table import CommonTable
 import statistics
 
 
-def convert(fileobj, informat, outformat):
-    """
-    Convert a file from one format to another.
-    :param fileobj:         Open tabular file handle
-    :param informat:        Parser object for importing file
-    :param outformat:       Parser object for exporting file
-    """
-    outformat.data = informat.read(fileobj)
-
-    return outformat
-
 def fmap(fileobj, func, adapter=None, columns=None):
     """
     Apply a function across columns in a csv file
@@ -83,45 +72,20 @@ def summarize(fileobj, adapter=None):
     :option adapter: File adapter, will default to CSV
     :return tuple: New header/rows
     """
-    _h, r_mean = fmap(fileobj, statistics.mean, adapter=adapter)
-    _h, r_mode = fmap(fileobj, statistics.mode, adapter=adapter)
-    _h, r_med = fmap(fileobj, statistics.median, adapter=adapter)
-    _h, r_sum = fmap(fileobj, sum, adapter=adapter)
+    adapter = adapter if adapter is not None else adapters.csv()
+    
+    # FIXME: After fileobj is consumed once, it can't be used again.
+    #        This API could use some improvement anyway.
+    means = fmap(fileobj, statistics.mean, adapter=adapter)
+    #modes = fmap(fileobj, statistics.mode, adapter=adapter)
+    medians = fmap(fileobj, statistics.median, adapter=adapter)
+    sums = fmap(fileobj, sum, adapter=adapter)
 
-    header = ['attribute'] + _h
-    rows = [r_mean, r_mode, r_med, r_sum]
+    header = ['attribute'] + means.header
+    rows = [
+        ['mean'] + means.rows[0],
+        #['mode'] + modes.rows,
+        ['median'] + medians.rows[0],
+        ['sum'] + sums.rows[0]]
 
     return CommonTable(header, rows)
-
-def tabulate(fileobj, adapter=None, maxw=None, pad=0):
-    """
-    Format the table.
-    :param file_obj:    Open csv file handle
-    :param adapter:     File adapter, will default to standard CSV
-    :option maxw:       Max cell width
-    :option pad:        Cell padding
-    :return list:       Formatted table in matrix like form.
-    :deprecated:        WARNING: This function has been moved to the
-                        `TableAdapter` class. To use the supported version,
-                        call `TableAdapter.tabulate()`. This is done
-                        automatically on `write()`.
-    """
-    adapter = adapter if adapter is not None else adapters.csv('inadapter')
-    header, rows = adapter.read(fileobj)
-
-    full = list(rows)
-    full.insert(0, header)
-    flat = zip(*full)
-    fmt = lambda s, w, a='<': '{:{}{}}'.format(s, a, w)
-    strnone = lambda x: str(x) if x is not None else None
-    fmtcol = []
-
-    for head, vals in zip(header, flat):
-        vals = [strnone(x) for x in vals]
-        calign = helpers.align(vals[1:])
-        cells = [len(x) for x in vals if x is not None]
-        cmax = max(cells) + pad if cells else 0
-        cmax = maxw if maxw is not None and maxw < cmax else cmax
-        fmtcol.append([fmt(helpers.trunc(x, cmax), cmax, calign) for x in vals])
-
-    return zip(*fmtcol)

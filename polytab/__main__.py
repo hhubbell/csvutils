@@ -60,7 +60,8 @@ def convert(args, remainder):
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
 
-    polytab.convert(informat.file, informat, outformat).write(outformat.file)
+    outformat.receive(informat)
+    outformat.write(outformat.file)
 
 def drop(args, remainder):
     """
@@ -98,16 +99,15 @@ def summarize(args, remainder):
     """
     Command line utility to summarize a tabular file.
     """
-    informat = getattr(parsers, args.informat)(designation='inparser')
-    outformat = getattr(parsers, args.outformat)(designation='outparser')
+    informat = getattr(adapters, args.informat)(designation='inparser')
+    outformat = getattr(adapters, args.outformat)(designation='outparser')
 
     informat.parse_args(remainder)
     outformat.parse_args(remainder)
 
-    header, rows = polytab.summarize(informat.file, parser=informat)
+    data = polytab.summarize(informat.file, adapter=informat)
     
-    outformat.header = header
-    outformat.rows = rows
+    outformat.data = data
     outformat.write(outformat.file)
 
 def tab(args, remainder):
@@ -199,6 +199,11 @@ def main():
 
     # polytab summarize
     sp_summarize = subparsers.add_parser('summarize', parents=[p_adapter])
+    sp_summarize.add_argument('-t', '--to',
+        dest='outformat',
+        nargs='?',
+        default='csv',
+        help='Output file type. Default CSV.')
     sp_summarize.set_defaults(func=summarize)
 
     # polytab tab

@@ -74,6 +74,17 @@ class Adapter(object):
         except AttributeError:
             raise NoAdapterDesignationError
 
+    def receive(self, parent):
+        """
+        Pass the internal data model from a given file adapter to another. If
+        the adapter has no data, attempt to read the file first.
+        :param parent [Adapter]: Source adapter
+        """
+        if parent.data is None:
+            parent.read(parent.file)
+
+        self.data = parent.data
+
     def read(self, *args, **kwargs):
         raise NotImplementedError
 
