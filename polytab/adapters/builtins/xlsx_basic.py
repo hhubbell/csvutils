@@ -3,7 +3,7 @@
 #
 
 from __future__ import absolute_import
-from ..base import Adapter
+from ..base import Reader, AdapterMethodNotSupportedError
 from ...common_table import CommonTable
 import datetime
 import functools
@@ -11,13 +11,31 @@ import zipfile
 import xml.etree.ElementTree as ElementTree
 
 
+def adapter(method, *args, **kwargs):
+    """
+    Takes a string adapter method name, either `reader` or `writer` and
+    returns the appropriate adapter class. This method exists primarily
+    to support dynamic arguments passed at the command line. Users that
+    want to use a `XLSXReader` or `XLSXWriter` adapter should do so directly.
+    :param method [str]: Adapter method
+    :return [object]: Initialized adapter object
+    """
+    if method == 'reader':
+        adapt = XLSXReader()
+    elif method == 'writer':
+        # Not currently supported
+        raise AdapterMethodNotSupportedError(method)
+    else:
+        raise AdapterMethodNotSupportedError(method)
+
+    return adapt
+
 def nstag(ns, tag):
     return '{{{}}}{}'.format(ns, tag)
 
 
-class XLSXAdapter(Adapter):
-    READ_MODE = 'rb'
-    WRITE_MODE = 'wb'
+class XLSXReader(Reader):
+    MODE = 'rb'
 
     NS_MAIN = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
 
@@ -34,7 +52,7 @@ class XLSXAdapter(Adapter):
         :option dimension [str]: Excel range notation (A1:B2)
         :option hasheader [bool]: Use first row in table as header
         """
-        super(XLSXAdapter, self).__init__(*args, **kwargs)
+        super(XLSXReader, self).__init__(*args, **kwargs)
 
         self.sheet_name = kwargs.get('sheet_name')
         self.sheet_id = kwargs.get('sheet_id', 1)
@@ -170,24 +188,24 @@ class XLSXAdapter(Adapter):
         """
         Creates an ArgumentParser with the adapter's allowed arguments.
         """
-        super(XLSXAdapter, self)._set_argparser_options()
+        super(XLSXReader, self)._set_argparser_options()
 
-        self._inparser.add_argument('--infile-sheet-name',
+        self._parser.add_argument('--infile-sheet-name',
             nargs='?',
             dest='sheet_name')
-        self._inparser.add_argument('--infile-sheet-index',
+        self._parser.add_argument('--infile-sheet-index',
             type=int,
             default=1,
             dest='sheet_id')
-        self._inparser.add_argument('--infile-dim',
+        self._parser.add_argument('--infile-dim',
             dest='dimension')
-        self._inparser.add_argument('--infile-no-header',
+        self._parser.add_argument('--infile-no-header',
             action='store_false',
             dest='hasheader')
-        self._inparser.add_argument('--infile-start-row',
+        self._parser.add_argument('--infile-start-row',
             type=int,
             dest='start_row')
-        self._inparser.add_argument('--infile-end-row',
+        self._parser.add_argument('--infile-end-row',
             type=int,
             dest='end_row')
 
@@ -243,11 +261,6 @@ class XLSXAdapter(Adapter):
         header = rows.pop(0)
 
         return CommonTable(header, rows)
-
-    # XXX Not yet supported
-    #def write(self, fileobj):
-    #    """
-    #    """
 
 
 class InvalidSheetError(Exception):

@@ -3,10 +3,30 @@
 #
 
 from __future__ import absolute_import
-from ..base import Adapter
+from ..base import Writer, AdapterMethodNotSupportedError
 
 
-class HTMLAdapter(Adapter):
+def adapter(method, *args, **kwargs):
+    """
+    Takes a string adapter method name, either `reader` or `writer` and
+    returns the appropriate adapter class. This method exists primarily
+    to support dynamic arguments passed at the command line. Users that
+    want to use a `HTMLReader` or `HTMLWriter` adapter should do so directly.
+    :param method [str]: Adapter method
+    :return [object]: Initialized adapter object
+    """
+    if method == 'reader':
+        # Not currently supported
+        raise AdapterMethodNotSupportedError(method)
+    elif method == 'writer':
+        adapt = HTMLWriter()
+    else:
+        raise AdapterMethodNotSupportedError(method)
+
+    return adapt
+
+
+class HTMLWriter(Writer):
     TEMPLATE = '<table>\n{}{}\n</table>\n'
     TAB_WIDTH = 4
 
@@ -14,7 +34,7 @@ class HTMLAdapter(Adapter):
         """
         :option pretty [bool]: Make HTML human-readable
         """
-        super(HTMLAdapter, self).__init__(*args, **kwargs)
+        super(HTMLWriter, self).__init__(*args, **kwargs)
 
         self.pretty = kwargs.get('pretty', getattr(self, 'pretty', False))
 
@@ -42,9 +62,9 @@ class HTMLAdapter(Adapter):
         """
         Creates an ArgumentParser with the adapters's allowed arguments.
         """
-        super(HTMLAdapter, self)._set_argparser_options()
+        super(HTMLWriter, self)._set_argparser_options()
 
-        self._outparser.add_argument('-P', '--outfile-pretty',
+        self._parser.add_argument('-P', '--outfile-pretty',
             action='store_true',
             dest='pretty',
             help='A flag to indicate the output should be human-readable.')

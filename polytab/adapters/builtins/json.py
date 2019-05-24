@@ -3,11 +3,31 @@
 #
 
 from __future__ import absolute_import
-from ..base import Adapter
+from ..base import Writer, AdapterMethodNotSupportedError
 import json
 
 
-class JSONAdapter(Adapter):
+def adapter(method, *args, **kwargs):
+    """
+    Takes a string adapter method name, either `reader` or `writer` and
+    returns the appropriate adapter class. This method exists primarily
+    to support dynamic arguments passed at the command line. Users that
+    want to use a `JSONReader` or `JSONWriter` adapter should do so directly.
+    :param method [str]: Adapter method
+    :return [object]: Initialized adapter object
+    """
+    if method == 'reader':
+        # Not currently supported
+        raise AdapterMethodNotSupportedError(method)
+    elif method == 'writer':
+        adapt = JSONWriter()
+    else:
+        raise AdapterMethodNotSupportedError(method)
+
+    return adapt
+
+
+class JSONWriter(Writer):
     TAB_WIDTH = 4
 
     def __init__(self, *args, **kwargs):
@@ -15,7 +35,7 @@ class JSONAdapter(Adapter):
         :option pretty [bool]: Make JSON human-readable
         :option indent [int]: Override indentation width
         """
-        super(JSONAdapter, self).__init__(*args, **kwargs)
+        super(JSONWriter, self).__init__(*args, **kwargs)
 
         self.pretty = kwargs.get('pretty', False)
         self.indent = kwargs.get('indent', self.TAB_WIDTH)
@@ -24,14 +44,14 @@ class JSONAdapter(Adapter):
         """
         Creates an ArgumentParser with the adapter's allowed arguments.
         """
-        super(JSONAdapter, self)._set_argparser_options()
+        super(JSONWriter, self)._set_argparser_options()
 
-        self._outparser.add_argument('-P', '--outfile-pretty',
+        self._parser.add_argument('-P', '--outfile-pretty',
             action='store_true',
             dest='pretty',
             help='A flag to indicate the output should be human-readable.')
         # XXX Does not work
-        self._outparser.add_argument('-i', '--outfile-indent',
+        self._parser.add_argument('-i', '--outfile-indent',
             type=int,
             nargs='?',
             default=self.TAB_WIDTH,
